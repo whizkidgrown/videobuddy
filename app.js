@@ -484,6 +484,11 @@ function renderLibrary() {
     const imdbRatingFilter = ratingFilter.filter(r => !['loved', 'okay', 'disliked'].includes(r));
     
     let filtered = data.shows.filter(show => {
+        // Only show shows with status=Watched OR a rating
+        const hasStatus = (userStatuses[show.title] || show.status) === 'Watched';
+        const hasRating = !!(userRatings[show.title] || show.rating);
+        if (!hasStatus && !hasRating) return false;
+        
         // Streaming filter
         if (!matchesStreaming(show, streamingFilter)) return false;
         

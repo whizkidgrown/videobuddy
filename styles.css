@@ -141,19 +141,22 @@ main {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
 }
 
 .show-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
 }
 
 .card-image {
     position: relative;
     width: 100%;
-    padding-top: 150%;
+    padding-top: 150%; /* 2:3 aspect ratio */
     background-color: var(--bg-hover);
     overflow: hidden;
+    max-height: 180px;
 }
 
 .card-image img {
@@ -184,32 +187,36 @@ main {
 
 .imdb-badge {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 8px;
+    left: 8px;
     background-color: var(--accent);
     color: var(--bg-dark);
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 3px 7px;
+    border-radius: 3px;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
-    gap: 5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    gap: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 .card-content {
-    padding: 15px;
+    padding: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     color: var(--text-primary);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    line-height: 1.3;
 }
 
 .card-title a {
@@ -223,53 +230,58 @@ main {
 }
 
 .card-meta {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .card-genres {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    line-height: 1.3;
 }
 
 .card-pitch {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 12px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card-streaming {
     display: inline-block;
     background-color: rgba(245, 197, 24, 0.15);
     color: var(--accent);
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    margin-bottom: 12px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
     font-weight: 500;
 }
 
 /* Buttons */
 .card-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 .btn {
     flex: 1;
-    min-width: 80px;
-    padding: 8px 12px;
+    min-width: 70px;
+    padding: 6px 10px;
     border: 1px solid var(--border);
     background-color: var(--bg-hover);
     color: var(--text-primary);
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -305,20 +317,20 @@ main {
 /* Grids */
 .batch-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 18px;
 }
 
 .picks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
 }
 
 .library-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 18px;
 }
 
 /* Filters */
@@ -543,19 +555,44 @@ footer {
     .picks-grid,
     .library-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .card-image {
+        max-height: 140px;
     }
 
     .card-content {
-        padding: 12px;
+        padding: 8px;
     }
 
     .card-title {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+    }
+
+    .card-meta {
+        font-size: 0.7rem;
+    }
+
+    .card-genres {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+    }
+
+    .card-streaming {
+        font-size: 0.7rem;
+        padding: 2px 6px;
     }
 
     .imdb-badge {
-        font-size: 0.8rem;
-        padding: 4px 8px;
+        font-size: 0.7rem;
+        padding: 2px 5px;
+    }
+
+    .btn {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+        min-width: 60px;
     }
 }
 
