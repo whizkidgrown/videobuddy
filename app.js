@@ -119,6 +119,12 @@ function setupTabs() {
             // Update panes
             tabPanes.forEach(pane => pane.classList.remove('active'));
             document.getElementById(targetTab).classList.add('active');
+            
+            // Update filter panel content and badge
+            if (document.getElementById('filterSidePanel')?.classList.contains('active')) {
+                populateFilterPanel();
+            }
+            updateGlobalFilterBadge();
         });
     });
 }
@@ -322,6 +328,9 @@ function updateFilterChips() {
             badgeEl.textContent = totalCount > 0 ? totalCount : '';
         }
     });
+    
+    // Update global filter badge
+    updateGlobalFilterBadge();
 }
 
 // Remove individual filter chip
@@ -609,7 +618,7 @@ async function undoNotInterested(title) {
     renderNewRatings();
 }
 
-// Render New Ratings (merged Top 5 + Rate Today)
+// Render New Ratings (merged Top 5 + Rate Today + AI Suggestions)
 function renderNewRatings() {
     const container = document.getElementById('newRatingsGrid');
     if (!data || !data.top5 || !data.todaysBatch) return;
@@ -619,66 +628,129 @@ function renderNewRatings() {
     
     let html = '';
     
-    // Section 1: Top picks for you
-    const topPicksHtml = data.top5
-        .map(pick => {
-            const show = getShow(pick.title);
-            if (!show) return '';
-            
-            const userRating = userRatings[show.title] || show.rating;
-            // Exclude any rated shows (including not_seen and not_interested)
-            if (userRating) return '';
-            
-            if (!matchesStreaming(show, streamingFilter)) return '';
-            if (!matchesImdbRating(show, imdbFilter)) return '';
-            
-            return createShowCard(show, 'showRating');
-        })
-        .filter(h => h)
-        .join('');
+    // Section 1: Top picks for you (AI suggestions first, then shows.json top5)
+    let topPicksCards = [];
     
-    if (topPicksHtml) {
+    // Add AI suggestion top picks (kind='top')
+    if (data.suggestions && data.suggestions.top) {
+        data.suggestions.top.forEach(suggestion => {
+            // Skip if already rated
+            if (userRatings[suggestion.title]) return;
+            
+            // Convert suggestion to show format for filtering
+            const suggestionShow = {
+                title: suggestion.title,
+                year: suggestion.year,
+                streaming: suggestion.streaming,
+                imdb_rating: suggestion.meta?.imdb_rating || '0',
+                _isAiSuggestion: true
+            };
+            
+            if (!matchesStreaming(suggestionShow, streamingFilter)) return;
+            if (!matchesImdbRating(suggestionShow, imdbFilter)) return;
+            
+            topPicksCards.push(createAISuggestionCard(suggestion, 'showRating'));
+        });
+    }
+    
+    // Add shows.json top5
+    data.top5.forEach(pick => {
+        const show = getShow(pick.title);
+        if (!show) return;
+        
+        const userRating = userRatings[show.title] || show.rating;
+        // Exclude any rated shows (including not_seen and not_interested)
+        if (userRating) return;
+        
+        if (!matchesStreaming(show, streamingFilter)) return;
+        if (!matchesImdbRating(show, imdbFilter)) return;
+        
+        topPicksCards.push(createShowCard(show, 'showRating'));
+    });
+    
+    if (topPicksCards.length > 0) {
         html += '<div class="subsection">';
         html += '<h3 class="subsection-title">Top picks for you</h3>';
         html += '<div class="subsection-grid">';
-        html += topPicksHtml;
+        html += topPicksCards.join('');
         html += '</div>';
         html += '</div>';
     }
     
-    // Section 2: Have you seen these?
-    const todaysBatchHtml = data.todaysBatch
-        .map(title => {
-            const show = getShow(title);
-            if (!show) return '';
-            
-            const userRating = userRatings[show.title];
-            // Exclude rated shows (including not_seen)
-            if (userRating && userRating !== '') return '';
-            
-            if (!matchesStreaming(show, streamingFilter)) return '';
-            if (!matchesImdbRating(show, imdbFilter)) return '';
-            
-            return createShowCard(show, 'rateToday');
-        })
-        .filter(h => h)
-        .join('');
+    // Section 2: Have you seen these? (AI suggestions batch + todaysBatch)
+    let batchCards = [];
     
-    if (todaysBatchHtml) {
+    // Add AI suggestion batch items (kind='batch')
+    if (data.suggestions && data.suggestions.batch) {
+        data.suggestions.batch.forEach(suggestion => {
+            // Skip if already rated
+            if (userRatings[suggestion.title]) return;
+            
+            // Convert suggestion to show format for filtering
+            const suggestionShow = {
+                title: suggestion.title,
+                year: suggestion.year,
+                streaming: suggestion.streaming,
+                imdb_rating: suggestion.meta?.imdb_rating || '0',
+                _isAiSuggestion: true
+            };
+            
+            if (!matchesStreaming(suggestionShow, streamingFilter)) return;
+            if (!matchesImdbRating(suggestionShow, imdbFilter)) return;
+            
+            batchCards.push(createAISuggestionCard(suggestion, 'rateToday'));
+        });
+    }
+    
+    // Add shows.json todaysBatch
+    data.todaysBatch.forEach(title => {
+        const show = getShow(title);
+        if (!show) return;
+        
+        const userRating = userRatings[show.title];
+        // Exclude rated shows (including not_seen)
+        if (userRating && userRating !== '') return;
+        
+        if (!matchesStreaming(show, streamingFilter)) return;
+        if (!matchesImdbRating(show, imdbFilter)) return;
+        
+        batchCards.push(createShowCard(show, 'rateToday'));
+    });
+    
+    if (batchCards.length > 0) {
         html += '<div class="subsection">';
         html += '<h3 class="subsection-title">Have you seen these?</h3>';
         html += '<div class="subsection-grid">';
-        html += todaysBatchHtml;
+        html += batchCards.join('');
         html += '</div>';
         html += '</div>';
     }
     
     if (html === '') {
-        html = '<div class="empty-state"><h3>All shows rated!</h3><p>Check the Watched tab to see your ratings.</p></div>';
+        html = '<div class="empty-state"><h3>All shows rated!</h3><p>Check the Watched tab to see your ratings or click "Get new picks" for AI recommendations.</p></div>';
     }
     
     container.innerHTML = html;
     updateFilterChips();
+}
+
+// Create show card from AI suggestion
+function createAISuggestionCard(suggestion, cardType) {
+    // Convert AI suggestion format to show format
+    const show = {
+        title: suggestion.title,
+        year: suggestion.year,
+        country: suggestion.country,
+        genres: suggestion.genres || [],
+        streaming: suggestion.streaming,
+        imdb_rating: '0', // AI suggestions don't have IMDb ratings yet
+        imdb_id: '',
+        poster: suggestion.poster_url || '',
+        pitch: suggestion.pitch || '',
+        _isAiSuggestion: true
+    };
+    
+    return createShowCard(show, cardType);
 }
 
 // Render Library (Watched - excluding not_seen and not_interested)
@@ -953,59 +1025,71 @@ async function getNewRecommendations() {
         // Show loading state
         btn.disabled = true;
         btn.classList.add('loading');
+        const originalText = btn.textContent;
         btn.textContent = 'Getting recommendations...';
         
+        // Check if database is enabled
+        if (!databaseEnabled || !window.sbClient) {
+            throw new Error('Database not configured. Please set up Supabase credentials.');
+        }
+        
         // Call Supabase Edge Function
-        const supabaseUrl = localStorage.getItem('supabaseUrl');
-        const supabaseKey = localStorage.getItem('supabaseAnonKey');
+        const { data: functionData, error: functionError } = await window.sbClient.functions.invoke('recommend');
         
-        if (!supabaseUrl || !supabaseKey) {
-            throw new Error('Supabase credentials not configured');
-        }
-        
-        const response = await fetch(`${supabaseUrl}/functions/v1/recommend`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${supabaseKey}`,
-                'Content-Type': 'application/json'
+        if (functionError) {
+            if (functionError.message?.includes('not found') || functionError.message?.includes('404')) {
+                throw new Error('AI recommender not deployed yet. Run: supabase functions deploy recommend');
             }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to get recommendations');
+            throw new Error(functionError.message || 'Failed to get recommendations');
         }
         
-        const result = await response.json();
-        console.log('Recommendations generated:', result);
+        if (functionData?.error) {
+            throw new Error(functionData.error);
+        }
+        
+        console.log('Recommendations generated:', functionData);
         
         // Load and render the new suggestions
         await loadSuggestionsFromDatabase();
         renderNewRatings();
         
         // Show success message briefly
-        btn.textContent = '✓ New picks loaded!';
+        btn.textContent = `✓ Got ${functionData.topPicks || 0} top picks + ${functionData.batch || 0} more!`;
         setTimeout(() => {
-            btn.textContent = '✨ Get new picks';
+            btn.textContent = originalText;
             btn.classList.remove('loading');
             btn.disabled = false;
-        }, 2000);
+        }, 2500);
         
     } catch (error) {
         console.error('Error getting recommendations:', error);
         btn.classList.remove('loading');
-        btn.textContent = '✗ Failed - try again';
+        
+        // Show user-friendly error
+        const errorMsg = error.message || 'Failed to get recommendations';
+        btn.textContent = errorMsg.length > 50 ? '✗ Error - see console' : `✗ ${errorMsg}`;
         btn.disabled = false;
+        
+        // Alert for important errors
+        if (errorMsg.includes('not deployed') || errorMsg.includes('not configured')) {
+            alert(`AI Recommender Setup Required:\n\n${errorMsg}\n\nSee AI_RECOMMENDER_DEPLOYMENT.md for setup instructions.`);
+        }
         
         setTimeout(() => {
             btn.textContent = '✨ Get new picks';
-        }, 3000);
+        }, 4000);
     }
 }
 
-// Load suggestions from database
+// Load suggestions from database (fail silently if table doesn't exist)
 async function loadSuggestionsFromDatabase() {
-    if (!databaseEnabled || !window.sbClient) return;
+    if (!databaseEnabled || !window.sbClient) {
+        // Initialize empty suggestions
+        if (data && !data.suggestions) {
+            data.suggestions = { top: [], batch: [] };
+        }
+        return;
+    }
     
     try {
         const { data: suggestionsData, error } = await window.sbClient
@@ -1013,14 +1097,22 @@ async function loadSuggestionsFromDatabase() {
             .select('*')
             .order('created_at', { ascending: false });
         
-        if (error) throw error;
+        // Fail silently if table doesn't exist (42P01 is Postgres "undefined table" error)
+        if (error) {
+            if (error.code === '42P01' || error.message?.includes('does not exist')) {
+                console.log('Suggestions table not created yet. Run migration to enable AI recommendations.');
+                if (data) data.suggestions = { top: [], batch: [] };
+                return;
+            }
+            throw error;
+        }
         
         // Store suggestions in global data object
         if (!data.suggestions) {
             data.suggestions = { top: [], batch: [] };
         }
         
-        if (suggestionsData) {
+        if (suggestionsData && suggestionsData.length > 0) {
             data.suggestions.top = suggestionsData.filter(s => s.kind === 'top').map(s => ({
                 ...s.meta,
                 _suggestionId: s.id,
@@ -1033,12 +1125,208 @@ async function loadSuggestionsFromDatabase() {
                 _isAiSuggestion: true
             }));
             
-            console.log('Loaded suggestions:', data.suggestions);
+            console.log('Loaded AI suggestions:', {
+                top: data.suggestions.top.length,
+                batch: data.suggestions.batch.length
+            });
+        } else {
+            data.suggestions = { top: [], batch: [] };
         }
         
     } catch (error) {
-        console.error('Error loading suggestions:', error);
+        console.warn('Could not load suggestions (table may not exist yet):', error.message);
+        if (data) data.suggestions = { top: [], batch: [] };
     }
+}
+
+// Toggle filter side panel
+function toggleFilterPanel() {
+    const overlay = document.getElementById('filterOverlay');
+    const panel = document.getElementById('filterSidePanel');
+    const btn = document.getElementById('filterIconBtn');
+    
+    const isActive = panel.classList.contains('active');
+    
+    if (isActive) {
+        overlay.classList.remove('active');
+        panel.classList.remove('active');
+        btn.classList.remove('active');
+    } else {
+        overlay.classList.add('active');
+        panel.classList.add('active');
+        btn.classList.add('active');
+        populateFilterPanel();
+    }
+}
+
+// Populate filter panel based on active tab
+function populateFilterPanel() {
+    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+    const content = document.getElementById('filterPanelContent');
+    
+    if (!content) return;
+    
+    let html = '';
+    
+    if (activeTab === 'newRatings') {
+        html = `
+            <div class="filter-dropdown">
+                <label>Streaming service</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('newRatingsStreaming')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="newRatingsStreamingDropdown" class="dropdown-menu">
+                        <div class="dropdown-options" id="newRatingsStreamingOptions"></div>
+                        <button class="dropdown-clear" onclick="clearDropdown('newRatingsStreaming')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-dropdown">
+                <label>IMDb rating range</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('newRatingsImdb')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="newRatingsImdbDropdown" class="dropdown-menu">
+                        <div class="dropdown-options">
+                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                        </div>
+                        <button class="dropdown-clear" onclick="clearDropdown('newRatingsImdb')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-clear-all" onclick="clearAllFilters('newRatings')">Clear all filters</button>
+        `;
+    } else if (activeTab === 'library') {
+        html = `
+            <div class="filter-dropdown">
+                <label>Streaming service</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStreaming')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="libraryStreamingDropdown" class="dropdown-menu">
+                        <div class="dropdown-options" id="libraryStreamingOptions"></div>
+                        <button class="dropdown-clear" onclick="clearDropdown('libraryStreaming')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-dropdown">
+                <label>Ratings</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('libraryRating')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="libraryRatingDropdown" class="dropdown-menu">
+                        <div class="dropdown-options">
+                            <div class="dropdown-section">My Rating</div>
+                            <label><input type="checkbox" value="loved"> ❤️ Loved</label>
+                            <label><input type="checkbox" value="okay"> 👍 Okay</label>
+                            <label><input type="checkbox" value="disliked"> 👎 Disliked</label>
+                            <div class="dropdown-section">IMDb Rating</div>
+                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                        </div>
+                        <button class="dropdown-clear" onclick="clearDropdown('libraryRating')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-dropdown">
+                <label>Status</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStatus')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="libraryStatusDropdown" class="dropdown-menu">
+                        <div class="dropdown-options">
+                            <label><input type="checkbox" value="Watching"> ▶️ Watching</label>
+                            <label><input type="checkbox" value="Watched"> ✅ Watched</label>
+                        </div>
+                        <button class="dropdown-clear" onclick="clearDropdown('libraryStatus')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-dropdown">
+                <label>Search</label>
+                <input type="text" id="searchInput" placeholder="Search shows..." onkeyup="debounce(() => renderLibrary(), 300)()">
+            </div>
+            <button class="btn-clear-all" onclick="clearAllFilters('library')">Clear all filters</button>
+        `;
+    } else if (activeTab === 'notSeen') {
+        html = `
+            <div class="filter-dropdown">
+                <label>Streaming service</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenStreaming')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="notSeenStreamingDropdown" class="dropdown-menu">
+                        <div class="dropdown-options" id="notSeenStreamingOptions"></div>
+                        <button class="dropdown-clear" onclick="clearDropdown('notSeenStreaming')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-dropdown">
+                <label>IMDb rating range</label>
+                <div class="dropdown-wrapper">
+                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenImdb')">
+                        <span class="dropdown-label">Select...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="notSeenImdbDropdown" class="dropdown-menu">
+                        <div class="dropdown-options">
+                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                        </div>
+                        <button class="dropdown-clear" onclick="clearDropdown('notSeenImdb')">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-clear-all" onclick="clearAllFilters('notSeen')">Clear all filters</button>
+        `;
+    }
+    
+    content.innerHTML = html;
+    
+    // Re-populate streaming options after DOM update
+    populateStreamingFilters();
+    
+    // Re-setup dropdown listeners
+    setupDropdowns();
+}
+
+// Update global filter badge count
+function updateGlobalFilterBadge() {
+    const badge = document.getElementById('globalFilterCount');
+    if (!badge) return;
+    
+    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+    let count = 0;
+    
+    if (activeTab === 'newRatings') {
+        count = getDropdownValues('newRatingsStreaming').length + getDropdownValues('newRatingsImdb').length;
+    } else if (activeTab === 'library') {
+        count = getDropdownValues('libraryStreaming').length + getDropdownValues('libraryRating').length + getDropdownValues('libraryStatus').length;
+        if (document.getElementById('searchInput')?.value) count++;
+    } else if (activeTab === 'notSeen') {
+        count = getDropdownValues('notSeenStreaming').length + getDropdownValues('notSeenImdb').length;
+    }
+    
+    badge.textContent = count > 0 ? count : '';
 }
 
 // Make functions global for onclick handlers
@@ -1048,3 +1336,4 @@ window.toggleDropdown = toggleDropdown;
 window.clearDropdown = clearDropdown;
 window.removeFilterChip = removeFilterChip;
 window.getNewRecommendations = getNewRecommendations;
+window.toggleFilterPanel = toggleFilterPanel;
