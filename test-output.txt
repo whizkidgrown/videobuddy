@@ -1,0 +1,259 @@
+
+> videobuddy@1.0.0 test
+> playwright test
+
+
+Running 10 tests using 2 workers
+
+(node:3109) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:3108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/10] [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Desktop (1280x720) › should switch between tabs
+[2/10] [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Desktop (1280x720) › should load without console errors
+[WebServer] (node:3100) [DEP0066] DeprecationWarning: OutgoingMessage.prototype._headers is deprecated
+[WebServer] (Use `node --trace-deprecation ...` to show where the warning was created)
+
+  1) [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Desktop (1280x720) › should switch between tabs 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      32 |         await page.goto(BASE_URL);
+      33 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 34 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      35 |
+      36 |         // Check initial tab is active
+      37 |         const topPicksTab = page.locator('.tab-btn[data-tab="topPicks"]');
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:34:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-c5a74--should-switch-between-tabs-chromium/error-context.md
+
+
+(node:3272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/10] [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Desktop (1280x720) › should open and close filters
+  2) [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Desktop (1280x720) › should open and close filters 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      57 |         await page.goto(BASE_URL);
+      58 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 59 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      60 |
+      61 |         // Initially collapsed
+      62 |         const filtersPanel = page.locator('#topPicksFilters');
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:59:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-e2b6c-ould-open-and-close-filters-chromium/error-context.md
+
+
+(node:3350) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/10] [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Desktop (1280x720) › should check and uncheck filters
+  3) [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Desktop (1280x720) › should load without console errors 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
+
+      23 |         await page.goto(BASE_URL);
+      24 |         await page.waitForLoadState('domcontentloaded');
+    > 25 |         await page.waitForFunction(() => window.data !== null && window.data !== undefined, { timeout: 10000 });
+         |                    ^
+      26 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+      27 |         
+      28 |         expect(errors.filter(e => !e.includes('Supabase not configured'))).toEqual([]);
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:25:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-347ac-load-without-console-errors-chromium/error-context.md
+
+
+(node:3426) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/10] [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Desktop (1280x720) › should persist rating change after reload
+  4) [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Desktop (1280x720) › should check and uncheck filters 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      76 |         await page.goto(BASE_URL);
+      77 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 78 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      79 |
+      80 |         // Open filters
+      81 |         const filtersButton = page.locator('.filters-toggle-btn').first();
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:78:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-635d5-d-check-and-uncheck-filters-chromium/error-context.md
+
+
+(node:3501) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[6/10] [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Mobile (390x844) › should load without console errors
+  5) [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Desktop (1280x720) › should persist rating change after reload 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      111 |         await page.goto(BASE_URL);
+      112 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 113 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+          |                    ^
+      114 |
+      115 |         // Go to Rate Today tab to find an unrated show
+      116 |         await page.locator('.tab-btn[data-tab="todaysBatch"]').click();
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:113:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-0d3f8--rating-change-after-reload-chromium/error-context.md
+
+
+(node:3582) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[7/10] [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Mobile (390x844) › should switch between tabs
+  6) [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Mobile (390x844) › should switch between tabs 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      32 |         await page.goto(BASE_URL);
+      33 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 34 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      35 |
+      36 |         // Check initial tab is active
+      37 |         const topPicksTab = page.locator('.tab-btn[data-tab="topPicks"]');
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:34:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-81c8a--should-switch-between-tabs-chromium/error-context.md
+
+
+(node:3662) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[8/10] [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Mobile (390x844) › should open and close filters
+  7) [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Mobile (390x844) › should load without console errors 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
+
+      23 |         await page.goto(BASE_URL);
+      24 |         await page.waitForLoadState('domcontentloaded');
+    > 25 |         await page.waitForFunction(() => window.data !== null && window.data !== undefined, { timeout: 10000 });
+         |                    ^
+      26 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+      27 |         
+      28 |         expect(errors.filter(e => !e.includes('Supabase not configured'))).toEqual([]);
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:25:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-02675-load-without-console-errors-chromium/error-context.md
+
+
+  8) [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Mobile (390x844) › should open and close filters 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      57 |         await page.goto(BASE_URL);
+      58 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 59 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      60 |
+      61 |         // Initially collapsed
+      62 |         const filtersPanel = page.locator('#topPicksFilters');
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:59:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-1a1a2-ould-open-and-close-filters-chromium/error-context.md
+
+
+(node:3740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:3746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[9/10] [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Mobile (390x844) › should check and uncheck filters
+[10/10] [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Mobile (390x844) › should persist rating change after reload
+  9) [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Mobile (390x844) › should check and uncheck filters 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      76 |         await page.goto(BASE_URL);
+      77 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 78 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+         |                    ^
+      79 |
+      80 |         // Open filters
+      81 |         const filtersButton = page.locator('.filters-toggle-btn').first();
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:78:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-9ce62-d-check-and-uncheck-filters-chromium/error-context.md
+
+
+  10) [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Mobile (390x844) › should persist rating change after reload 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('.show-card') to be visible
+
+
+      111 |         await page.goto(BASE_URL);
+      112 |         await page.waitForFunction(() => window.data !== null, { timeout: 10000 });
+    > 113 |         await page.waitForSelector('.show-card', { timeout: 10000 });
+          |                    ^
+      114 |
+      115 |         // Go to Rate Today tab to find an unrated show
+      116 |         await page.locator('.tab-btn[data-tab="todaysBatch"]').click();
+        at /agent/repos/videobuddy/tests/videobuddy.spec.js:113:20
+
+    Error Context: test-results/videobuddy-VideoBuddy-Test-da07d--rating-change-after-reload-chromium/error-context.md
+
+
+  10 failed
+    [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Desktop (1280x720) › should load without console errors 
+    [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Desktop (1280x720) › should switch between tabs 
+    [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Desktop (1280x720) › should open and close filters 
+    [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Desktop (1280x720) › should check and uncheck filters 
+    [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Desktop (1280x720) › should persist rating change after reload 
+    [chromium] › tests/videobuddy.spec.js:15:11 › VideoBuddy Tests › Mobile (390x844) › should load without console errors 
+    [chromium] › tests/videobuddy.spec.js:31:11 › VideoBuddy Tests › Mobile (390x844) › should switch between tabs 
+    [chromium] › tests/videobuddy.spec.js:56:11 › VideoBuddy Tests › Mobile (390x844) › should open and close filters 
+    [chromium] › tests/videobuddy.spec.js:75:11 › VideoBuddy Tests › Mobile (390x844) › should check and uncheck filters 
+    [chromium] › tests/videobuddy.spec.js:110:11 › VideoBuddy Tests › Mobile (390x844) › should persist rating change after reload 

@@ -21,6 +21,7 @@
             <button class="tab-btn active" data-tab="topPicks">Top 5 For You</button>
             <button class="tab-btn" data-tab="todaysBatch">Rate Today</button>
             <button class="tab-btn" data-tab="library">Watched</button>
+            <button class="tab-btn" data-tab="notSeen">Not seen</button>
         </div>
 
         <!-- Tab Contents -->
@@ -209,6 +210,59 @@
                 <div class="export-container">
                     <a href="#" id="exportLink" class="export-link">Export my ratings</a>
                 </div>
+            </section>
+
+            <!-- Not Seen Tab -->
+            <section id="notSeen" class="tab-pane">
+                <h2>Not seen</h2>
+                <p class="section-desc">Shows you marked as not seen - rate them later or remove them</p>
+                
+                <button class="filters-toggle-btn" onclick="toggleFilters('notSeen')">
+                    Filters <span id="notSeenFilterCount" class="filter-badge"></span>
+                </button>
+                
+                <div id="notSeenFilters" class="filters-panel collapsed">
+                    <div class="filters-content">
+                        <div class="filter-row">
+                            <div class="filter-dropdown">
+                                <label>Streaming service</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenStreaming')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="notSeenStreamingDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options" id="notSeenStreamingOptions"></div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('notSeenStreaming')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-dropdown">
+                                <label>IMDb rating range</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenImdb')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="notSeenImdbDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options">
+                                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                                        </div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('notSeenImdb')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-clear-all" onclick="clearAllFilters('notSeen')">Clear filters</button>
+                        </div>
+                        <div id="notSeenFilterChips" class="filter-chips"></div>
+                    </div>
+                </div>
+
+                <div id="notSeenCount" class="library-count"></div>
+                <div id="notSeenGrid" class="library-grid"></div>
             </section>
         </div>
     </main>

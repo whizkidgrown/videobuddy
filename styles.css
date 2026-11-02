@@ -129,7 +129,7 @@ main {
     font-size: 1rem;
 }
 
-/* New Filters Toggle Button */
+/* Filters Toggle Button */
 .filters-toggle-btn {
     padding: 12px 24px;
     background-color: var(--bg-card);
@@ -388,83 +388,69 @@ main {
     color: var(--accent);
 }
 
-/* Card Styles */
-.show-card {
+/* Horizontal Card Layout */
+.show-card.horizontal {
+    display: flex;
+    gap: 15px;
     background-color: var(--bg-card);
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
     border: 1px solid var(--border);
+    padding: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.show-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+.show-card.horizontal:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-.card-image {
-    position: relative;
-    width: 100%;
-    padding-top: 150%;
+.card-poster {
+    flex-shrink: 0;
+    width: 90px;
+    height: 135px;
     background-color: var(--bg-hover);
+    border-radius: 4px;
     overflow: hidden;
+    position: relative;
 }
 
-.card-image img {
-    position: absolute;
-    top: 0;
-    left: 0;
+.card-poster img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.card-image .fallback {
+.poster-fallback {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2rem;
     background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-    color: var(--text-secondary);
-    font-size: 1.2rem;
-    text-align: center;
-    padding: 20px;
-    font-weight: 600;
 }
 
-.imdb-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: var(--accent);
-    color: var(--bg-dark);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-weight: 700;
-    font-size: 0.95rem;
+.card-details {
+    flex: 1;
     display: flex;
-    align-items: center;
-    gap: 5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
 }
 
-.card-content {
-    padding: 15px;
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .card-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
-    margin-bottom: 8px;
     color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    flex: 1;
 }
 
 .card-title a {
@@ -477,41 +463,36 @@ main {
     color: var(--accent);
 }
 
-.card-meta {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
+.imdb-badge-inline {
+    flex-shrink: 0;
+    background-color: var(--accent);
+    color: var(--bg-dark);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
 }
 
-.card-genres {
+.card-meta {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-bottom: 12px;
 }
 
-.card-pitch {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 12px;
-}
-
-/* Streaming Badges */
 .card-streaming {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    margin-bottom: 12px;
 }
 
 .streaming-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 24px;
-    padding: 0 8px;
+    height: 20px;
+    padding: 0 6px;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 3px;
     transition: transform 0.2s ease;
 }
 
@@ -520,37 +501,85 @@ main {
 }
 
 .streaming-badge img {
-    height: 16px;
+    height: 14px;
     width: auto;
     display: block;
 }
 
 .streaming-badge.text-badge {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-secondary);
     border: 1px solid var(--border);
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Rating Control (Segmented Control Style) */
+.card-pitch {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Seen Question */
+.seen-question {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.seen-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.seen-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.seen-btn {
+    padding: 6px 20px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.seen-btn.yes:hover {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.seen-btn.no:hover {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* Rating Control */
 .rating-control {
     display: flex;
     gap: 4px;
-    margin-top: 12px;
     background-color: var(--bg-hover);
     padding: 4px;
     border-radius: 6px;
+    width: fit-content;
 }
 
 .rating-btn {
-    flex: 1;
-    padding: 8px 4px;
+    padding: 6px 12px;
     border: none;
     background-color: transparent;
     color: var(--text-secondary);
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     transition: all 0.2s ease;
 }
 
@@ -575,18 +604,40 @@ main {
     color: var(--danger);
 }
 
+/* Not Seen Actions */
+.not-seen-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.undo-btn {
+    padding: 6px 16px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.undo-btn:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
 /* Status Control */
 .status-control {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-top: 12px;
 }
 
 .status-btn {
-    flex: 1;
-    min-width: 80px;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border: 1px solid var(--border);
     background-color: var(--bg-hover);
     color: var(--text-primary);
@@ -601,7 +652,6 @@ main {
     background-color: var(--accent);
     color: var(--bg-dark);
     border-color: var(--accent);
-    transform: scale(1.02);
 }
 
 .status-btn.active {
@@ -610,29 +660,19 @@ main {
     border-color: var(--accent);
 }
 
-/* Grids */
-.batch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
-}
-
-.picks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 30px;
-}
-
+/* Grids - 2 columns on desktop, 1 on mobile */
+.batch-grid,
+.picks-grid,
 .library-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
 .library-count {
     color: var(--text-secondary);
-    margin-bottom: 20px;
-    font-size: 1rem;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
 }
 
 /* Footer */
@@ -686,7 +726,7 @@ footer {
     color: var(--text-primary);
 }
 
-/* Responsive */
+/* Responsive - Single column on mobile */
 @media (max-width: 768px) {
     h1 {
         font-size: 1.5rem;
@@ -697,8 +737,8 @@ footer {
     }
 
     .tab-btn {
-        padding: 12px 20px;
-        font-size: 1rem;
+        padding: 12px 15px;
+        font-size: 0.95rem;
     }
 
     .section h2 {
@@ -719,39 +759,43 @@ footer {
         width: 100%;
     }
 
+    /* Single column on mobile */
     .batch-grid,
     .picks-grid,
     .library-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
+        grid-template-columns: 1fr;
     }
 
-    .status-control {
-        flex-direction: column;
+    .show-card.horizontal {
+        gap: 12px;
+        padding: 10px;
     }
 
-    .status-btn {
-        min-width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .batch-grid,
-    .picks-grid,
-    .library-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .card-content {
-        padding: 12px;
+    .card-poster {
+        width: 70px;
+        height: 105px;
     }
 
     .card-title {
         font-size: 0.95rem;
     }
 
-    .imdb-badge {
+    .card-meta {
         font-size: 0.8rem;
-        padding: 4px 8px;
+    }
+
+    .card-pitch {
+        font-size: 0.85rem;
+    }
+
+    .seen-question {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .not-seen-actions {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
