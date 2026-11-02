@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hemant's TV Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -28,7 +30,11 @@
                 <h2>Top 5 For You</h2>
                 <p class="section-desc">Handpicked based on your taste</p>
                 
-                <div class="filters">
+                <button class="filter-toggle" onclick="toggleFilters('topPicks')">
+                    🔍 Filters <span id="topPicksFilterCount" class="filter-count"></span>
+                </button>
+                
+                <div id="topPicksFilters" class="filters">
                     <div class="filter-group">
                         <label>Streaming:</label>
                         <select id="topPicksStreamingFilter" multiple class="multi-select">
@@ -53,9 +59,13 @@
             <!-- Today's Batch Tab -->
             <section id="todaysBatch" class="tab-pane">
                 <h2>Rate Today</h2>
-                <p class="section-desc">Rate these 7 shows to help refine your recommendations</p>
+                <p class="section-desc">Rate these shows - they'll move to Watched once rated</p>
                 
-                <div class="filters">
+                <button class="filter-toggle" onclick="toggleFilters('batch')">
+                    🔍 Filters <span id="batchFilterCount" class="filter-count"></span>
+                </button>
+                
+                <div id="batchFilters" class="filters">
                     <div class="filter-group">
                         <label>Streaming:</label>
                         <select id="batchStreamingFilter" multiple class="multi-select">
@@ -81,8 +91,11 @@
             <section id="library" class="tab-pane">
                 <h2>Watched</h2>
                 
-                <!-- Filters -->
-                <div class="filters">
+                <button class="filter-toggle" onclick="toggleFilters('library')">
+                    🔍 Filters <span id="libraryFilterCount" class="filter-count"></span>
+                </button>
+                
+                <div id="libraryFilters" class="filters">
                     <div class="filter-group">
                         <label>Streaming:</label>
                         <select id="libraryStreamingFilter" multiple class="multi-select">
@@ -141,6 +154,7 @@
         </div>
     </footer>
 
+    <script src="database.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

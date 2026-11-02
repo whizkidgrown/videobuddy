@@ -2,13 +2,20 @@
 let data = null;
 let userRatings = {};
 let userStatuses = {};
+let databaseEnabled = false;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
-    loadUserData();
+    databaseEnabled = initSupabase();
+    if (databaseEnabled) {
+        await loadRatingsFromDatabase();
+    } else {
+        loadUserData();
+    }
     setupTabs();
     populateStreamingFilters();
+    initializeFilterState();
     renderTopPicks();
     renderTodaysBatch();
     renderLibrary();
@@ -74,6 +81,78 @@ function setupTabs() {
             document.getElementById(targetTab).classList.add('active');
         });
     });
+}
+
+// Initialize filter state (collapsed on mobile by default)
+function initializeFilterState() {
+    if (window.innerWidth <= 768) {
+        ['topPicksFilters', 'batchFilters', 'libraryFilters'].forEach(id => {
+            const filters = document.getElementById(id);
+            if (filters) filters.classList.add('collapsed');
+        });
+    }
+}
+
+// Toggle filters
+function toggleFilters(tab) {
+    const filterMap = {
+        'topPicks': 'topPicksFilters',
+        'batch': 'batchFilters',
+        'library': 'libraryFilters'
+    };
+    
+    const filtersId = filterMap[tab];
+    const filters = document.getElementById(filtersId);
+    
+    if (filters) {
+        if (filters.classList.contains('collapsed')) {
+            filters.classList.remove('collapsed');
+            filters.classList.add('expanded');
+        } else {
+            filters.classList.add('collapsed');
+            filters.classList.remove('expanded');
+        }
+    }
+}
+
+// Count active filters
+function updateFilterCount(tab) {
+    const filterConfigs = {
+        'topPicks': {
+            countId: 'topPicksFilterCount',
+            filters: ['topPicksStreamingFilter', 'topPicksImdbFilter']
+        },
+        'batch': {
+            countId: 'batchFilterCount',
+            filters: ['batchStreamingFilter', 'batchImdbFilter']
+        },
+        'library': {
+            countId: 'libraryFilterCount',
+            filters: ['libraryStreamingFilter', 'libraryRatingFilter', 'statusFilter']
+        }
+    };
+    
+    const config = filterConfigs[tab];
+    if (!config) return;
+    
+    let totalCount = 0;
+    config.filters.forEach(filterId => {
+        const selected = getSelectedValues(filterId);
+        totalCount += selected.length;
+    });
+    
+    // Add search if present
+    if (tab === 'library') {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value.trim()) {
+            totalCount += 1;
+        }
+    }
+    
+    const countEl = document.getElementById(config.countId);
+    if (countEl) {
+        countEl.textContent = totalCount > 0 ? totalCount : '';
+    }
 }
 
 // Populate streaming filters from data
@@ -193,8 +272,9 @@ function setupFilterListeners() {
 }
 
 // Create card HTML
-function createShowCard(show, includeRatingButtons = false, includePitch = false, isTopPick = false) {
-    const userRating = userRatings[show.title] || show.rating;
+function createShowCard(show, includeRatingButtons = false, includePitch = false, isTopPick = false, isRateToday = false) {
+    // For Rate Today cards, ignore any existing rating (start fresh)
+    const userRating = isRateToday ? '' : (userRatings[show.title] || show.rating);
     const userStatus = userStatuses[show.title] || show.status;
     
     const imdbUrl = show.imdb_id ? `https://www.imdb.com/title/${show.imdb_id}/` : null;
@@ -241,12 +321,12 @@ function createShowCard(show, includeRatingButtons = false, includePitch = false
                                 onclick="setRating('${show.title}', 'okay', ${isTopPick})">👍 Okay</button>
                         <button class="btn btn-disliked ${userRating === 'disliked' ? 'active' : ''}" 
                                 onclick="setRating('${show.title}', 'disliked', ${isTopPick})">👎 Disliked</button>
-                        ${!isTopPick ? `<button class="btn ${!userRating ? 'active' : ''}" 
+                        ${!isTopPick && !isRateToday ? `<button class="btn ${!userRating ? 'active' : ''}" 
                                 onclick="setRating('${show.title}', '', false)">👀 Haven't Seen</button>` : ''}
                     </div>
                 ` : ''}
                 
-                ${!showRatingInTopPick ? `
+                ${!showRatingInTopPick && !isRateToday ? `
                     <div class="card-buttons status-buttons">
                         <button class="btn ${userStatus === 'Want to watch' ? 'active' : ''}" 
                                 onclick="setStatus('${show.title}', 'Want to watch', ${isTopPick})">📌 Want to Watch</button>
@@ -316,16 +396,21 @@ function renderTodaysBatch() {
             const show = getShow(title);
             if (!show) return '';
             
+            // Skip if already rated (moved to Watched)
+            const userRating = userRatings[show.title];
+            if (userRating) return '';
+            
             // Apply filters
             if (!matchesStreaming(show, streamingFilter)) return '';
             if (!matchesImdbRating(show, imdbFilter)) return '';
             
-            return createShowCard(show, true, false);
+            return createShowCard(show, true, false, false, true); // isRateToday = true
         })
         .filter(h => h)
         .join('');
     
-    container.innerHTML = html || '<div class="empty-state"><h3>No shows match your filters</h3><p>Try adjusting your filters or clear them to see today\'s batch.</p></div>';
+    container.innerHTML = html || '<div class="empty-state"><h3>All shows rated!</h3><p>Check the Watched tab to see your ratings.</p></div>';
+    updateFilterCount('batch');
 }
 
 // Render Top Picks
@@ -356,6 +441,7 @@ function renderTopPicks() {
         .join('');
     
     container.innerHTML = html || '<div class="empty-state"><h3>No shows match your filters</h3><p>Try adjusting your filters or clear them to see all recommendations.</p></div>';
+    updateFilterCount('topPicks');
 }
 
 // Render Library with filters
@@ -410,21 +496,36 @@ function renderLibrary() {
         .join('');
     
     container.innerHTML = html || '<div class="empty-state"><h3>No shows match your filters</h3><p>Try adjusting your filters or search terms.</p></div>';
+    updateFilterCount('library');
 }
 
 // Set rating
-function setRating(title, rating, isTopPick = false) {
+async function setRating(title, rating, isTopPick = false) {
+    const show = getShow(title);
+    
     if (rating === '') {
         delete userRatings[title];
     } else {
         userRatings[title] = rating;
+        
+        // Save to database
+        if (databaseEnabled && show) {
+            await saveRatingToDatabase(title, rating, show.imdb_id);
+        }
     }
-    saveUserData();
     
-    // If from Top 5 and rated, it moves to Watched tab
-    if (isTopPick && rating) {
+    saveUserData(); // Also save to localStorage as backup
+    
+    // If from Top 5 or Rate Today and rated, it moves to Watched tab
+    if ((isTopPick || isRateToday(title)) && rating) {
+        // Auto-set status to Watched when rated
+        userStatuses[title] = 'Watched';
+        saveUserData();
+        
         renderTopPicks();
+        renderTodaysBatch();
         renderLibrary();
+        
         // Switch to Watched tab to show the rated show
         const watchedTab = document.querySelector('[data-tab="library"]');
         if (watchedTab) watchedTab.click();
@@ -433,6 +534,11 @@ function setRating(title, rating, isTopPick = false) {
         renderTopPicks();
         renderLibrary();
     }
+}
+
+// Check if show is in Rate Today batch
+function isRateToday(title) {
+    return data && data.todaysBatch && data.todaysBatch.includes(title);
 }
 
 // Set status
@@ -513,3 +619,4 @@ function debounce(func, wait) {
 window.setRating = setRating;
 window.setStatus = setStatus;
 window.clearFilters = clearFilters;
+window.toggleFilters = toggleFilters;

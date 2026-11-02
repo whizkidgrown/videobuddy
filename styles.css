@@ -322,6 +322,41 @@ main {
 }
 
 /* Filters */
+.filter-toggle {
+    display: none; /* Hidden on desktop */
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.filter-toggle:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--accent);
+}
+
+.filter-count {
+    float: right;
+    background-color: var(--accent);
+    color: var(--bg-dark);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.filter-count:empty {
+    display: none;
+}
+
 .filters {
     display: flex;
     gap: 20px;
@@ -332,6 +367,10 @@ main {
     border-radius: 8px;
     border: 1px solid var(--border);
     align-items: flex-end;
+}
+
+.filters.collapsed {
+    display: none;
 }
 
 .filter-group {
@@ -458,6 +497,20 @@ footer {
 
     .section h2 {
         font-size: 1.4rem;
+    }
+
+    /* Show filter toggle on mobile */
+    .filter-toggle {
+        display: block;
+    }
+
+    /* Collapse filters by default on mobile */
+    .filters {
+        display: none;
+    }
+
+    .filters.expanded {
+        display: flex;
     }
 
     .batch-grid,
