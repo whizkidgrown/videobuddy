@@ -80,45 +80,84 @@ Return ONLY valid JSON with this exact structure:
   ]
 }`
 
-    // 5. Call Google Gemini API
+    // 5. Call Google Gemini API with fallback models
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
     if (!geminiApiKey) {
       throw new Error('GEMINI_API_KEY not configured')
     }
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 2048,
-          }
-        })
-      }
-    )
+    const models = ['gemini-3.5-flash', 'gemini-flash-latest', 'gemini-flash-lite-latest']
+    let responseText = null
+    let lastError = null
 
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text()
-      throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorText}`)
+    for (const model of models) {
+      for (let retry = 0; retry < 2; retry++) {
+        try {
+          if (retry > 0) {
+            await new Promise(resolve => setTimeout(resolve, 2000)) // 2s delay before retry
+          }
+
+          const geminiResponse = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [{
+                    text: prompt
+                  }]
+                }],
+                generationConfig: {
+                  temperature: 0.7,
+                  topK: 40,
+                  topP: 0.95,
+                  maxOutputTokens: 2048,
+                }
+              })
+            }
+          )
+
+          // Check for retryable errors
+          if ([404, 429, 500, 503].includes(geminiResponse.status)) {
+            const errorText = await geminiResponse.text()
+            lastError = `${model}: ${geminiResponse.status} - ${errorText}`
+            if (retry === 0) {
+              continue // Retry this model
+            } else {
+              break // Move to next model
+            }
+          }
+
+          if (!geminiResponse.ok) {
+            const errorText = await geminiResponse.text()
+            throw new Error(`${model}: ${geminiResponse.status} - ${errorText}`)
+          }
+
+          const geminiData = await geminiResponse.json()
+          responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
+
+          if (responseText) {
+            console.log(`Success with model: ${model}`)
+            break // Success, exit retry loop
+          }
+        } catch (error) {
+          lastError = error.message
+          if (retry === 0) {
+            continue // Retry
+          }
+        }
+      }
+
+      if (responseText) {
+        break // Success, exit model loop
+      }
     }
 
-    const geminiData = await geminiResponse.json()
-    const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
-
     if (!responseText) {
-      throw new Error('No response from Gemini')
+      throw new Error(lastError || 'All Gemini models failed')
     }
 
     // Parse JSON from response (might be wrapped in ```json blocks)
