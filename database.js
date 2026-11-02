@@ -1,21 +1,16 @@
 // Database configuration
-// These values will be provided by Hemant after setting up Supabase
 const SUPABASE_CONFIG = {
-    url: 'YOUR_SUPABASE_URL', // Will be replaced with actual URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY' // Safe to expose - restricted by RLS
+    url: 'https://xarftlanzdfuzwrfewqw.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcmZ0bGFuemRmdXp3cmZld3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTAwMTUsImV4cCI6MjEwOTIyNjAxNX0.PrsAQsjGC_O10YeFcAbSz80pJwdzwoFfqGDK6YljuX0'
 };
 
 // Initialize Supabase client (using CDN version)
-let supabase = null;
+let sbClient = null;
 
 function initSupabase() {
-    if (SUPABASE_CONFIG.url === 'YOUR_SUPABASE_URL') {
-        console.warn('Supabase not configured. Using localStorage only.');
-        return false;
-    }
-    
     try {
-        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        sbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        console.log('✓ Supabase initialized');
         return true;
     } catch (error) {
         console.error('Failed to initialize Supabase:', error);
@@ -25,23 +20,24 @@ function initSupabase() {
 
 // Save rating to Supabase
 async function saveRatingToDatabase(title, rating, imdb_id = null) {
-    if (!supabase) return false;
+    if (!sbClient) return false;
     
     try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from('ratings')
             .upsert({
                 show_title: title,
                 rating: rating,
                 imdb_id: imdb_id,
                 rated_at: new Date().toISOString(),
-                user_agent: navigator.userAgent.substring(0, 100) // For basic tracking
+                user_agent: navigator.userAgent.substring(0, 100)
             }, {
-                onConflict: 'show_title'
+                onConflict: 'show_title',
+                ignoreDuplicates: false
             });
         
         if (error) throw error;
-        console.log('Rating saved to database:', title, rating);
+        console.log('✓ Rating saved to database:', title, rating);
         return true;
     } catch (error) {
         console.error('Failed to save to database:', error);
@@ -51,10 +47,10 @@ async function saveRatingToDatabase(title, rating, imdb_id = null) {
 
 // Load existing ratings from database on startup
 async function loadRatingsFromDatabase() {
-    if (!supabase) return;
+    if (!sbClient) return;
     
     try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from('ratings')
             .select('show_title, rating')
             .order('rated_at', { ascending: false });
@@ -63,10 +59,12 @@ async function loadRatingsFromDatabase() {
         
         // Merge with localStorage
         if (data && data.length > 0) {
+            console.log(`✓ Loaded ${data.length} ratings from database`);
             data.forEach(item => {
                 userRatings[item.show_title] = item.rating;
+                // Mark as Watched
+                userStatuses[item.show_title] = 'Watched';
             });
-            console.log(`Loaded ${data.length} ratings from database`);
             saveUserData(); // Save to localStorage as backup
         }
     } catch (error) {

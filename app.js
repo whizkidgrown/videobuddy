@@ -22,20 +22,42 @@ const streamingLogos = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadData();
-    databaseEnabled = initSupabase();
-    if (databaseEnabled) {
-        await loadRatingsFromDatabase();
-    } else {
-        loadUserData();
+    try {
+        await loadData();
+        
+        // Try to initialize database
+        try {
+            databaseEnabled = initSupabase();
+            if (databaseEnabled) {
+                await loadRatingsFromDatabase();
+            } else {
+                console.warn('Database not initialized, using localStorage only');
+                loadUserData();
+            }
+        } catch (dbError) {
+            console.error('Database initialization failed:', dbError);
+            databaseEnabled = false;
+            loadUserData();
+        }
+        
+        // Always set up UI regardless of database status
+        setupTabs();
+        populateStreamingFilters();
+        setupDropdowns();
+        renderTopPicks();
+        renderTodaysBatch();
+        renderLibrary();
+        setupEventListeners();
+    } catch (error) {
+        console.error('Critical initialization error:', error);
+        document.body.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: white;">
+                <h2>Error Loading Site</h2>
+                <p>Please refresh the page. If the problem persists, clear your browser cache.</p>
+                <p style="color: #999; font-size: 0.9rem;">Error: ${error.message}</p>
+            </div>
+        `;
     }
-    setupTabs();
-    populateStreamingFilters();
-    setupDropdowns();
-    renderTopPicks();
-    renderTodaysBatch();
-    renderLibrary();
-    setupEventListeners();
 });
 
 // Load shows data
