@@ -5,11 +5,11 @@ const SUPABASE_CONFIG = {
 };
 
 // Initialize Supabase client (using CDN version)
-let supabase = null;
+let sbClient = null;
 
 function initSupabase() {
     try {
-        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        sbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
         console.log('✓ Supabase initialized');
         return true;
     } catch (error) {
@@ -20,10 +20,10 @@ function initSupabase() {
 
 // Save rating to Supabase
 async function saveRatingToDatabase(title, rating, imdb_id = null) {
-    if (!supabase) return false;
+    if (!sbClient) return false;
     
     try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from('ratings')
             .upsert({
                 show_title: title,
@@ -47,10 +47,10 @@ async function saveRatingToDatabase(title, rating, imdb_id = null) {
 
 // Load existing ratings from database on startup
 async function loadRatingsFromDatabase() {
-    if (!supabase) return;
+    if (!sbClient) return;
     
     try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from('ratings')
             .select('show_title, rating')
             .order('rated_at', { ascending: false });
@@ -59,10 +59,12 @@ async function loadRatingsFromDatabase() {
         
         // Merge with localStorage
         if (data && data.length > 0) {
+            console.log(`✓ Loaded ${data.length} ratings from database`);
             data.forEach(item => {
                 userRatings[item.show_title] = item.rating;
+                // Mark as Watched
+                userStatuses[item.show_title] = 'Watched';
             });
-            console.log(`Loaded ${data.length} ratings from database`);
             saveUserData(); // Save to localStorage as backup
         }
     } catch (error) {
