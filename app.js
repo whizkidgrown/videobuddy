@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupTabs();
         populateStreamingFilters();
         setupDropdowns();
+        
+        // Load AI suggestions if database is enabled
+        if (databaseEnabled) {
+            await loadSuggestionsFromDatabase();
+        }
+        
         renderNewRatings();
         renderLibrary();
         renderNotSeen();
@@ -938,9 +944,107 @@ function debounce(func, wait) {
     };
 }
 
-// Make functions global for onclick handlers (filters only)
+// Get new AI recommendations
+async function getNewRecommendations() {
+    const btn = document.getElementById('getNewPicksBtn');
+    if (!btn || btn.disabled) return;
+    
+    try {
+        // Show loading state
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = 'Getting recommendations...';
+        
+        // Call Supabase Edge Function
+        const supabaseUrl = localStorage.getItem('supabaseUrl');
+        const supabaseKey = localStorage.getItem('supabaseAnonKey');
+        
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error('Supabase credentials not configured');
+        }
+        
+        const response = await fetch(`${supabaseUrl}/functions/v1/recommend`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to get recommendations');
+        }
+        
+        const result = await response.json();
+        console.log('Recommendations generated:', result);
+        
+        // Load and render the new suggestions
+        await loadSuggestionsFromDatabase();
+        renderNewRatings();
+        
+        // Show success message briefly
+        btn.textContent = '✓ New picks loaded!';
+        setTimeout(() => {
+            btn.textContent = '✨ Get new picks';
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error getting recommendations:', error);
+        btn.classList.remove('loading');
+        btn.textContent = '✗ Failed - try again';
+        btn.disabled = false;
+        
+        setTimeout(() => {
+            btn.textContent = '✨ Get new picks';
+        }, 3000);
+    }
+}
+
+// Load suggestions from database
+async function loadSuggestionsFromDatabase() {
+    if (!databaseEnabled || !window.sbClient) return;
+    
+    try {
+        const { data: suggestionsData, error } = await window.sbClient
+            .from('suggestions')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        // Store suggestions in global data object
+        if (!data.suggestions) {
+            data.suggestions = { top: [], batch: [] };
+        }
+        
+        if (suggestionsData) {
+            data.suggestions.top = suggestionsData.filter(s => s.kind === 'top').map(s => ({
+                ...s.meta,
+                _suggestionId: s.id,
+                _isAiSuggestion: true
+            }));
+            
+            data.suggestions.batch = suggestionsData.filter(s => s.kind === 'batch').map(s => ({
+                ...s.meta,
+                _suggestionId: s.id,
+                _isAiSuggestion: true
+            }));
+            
+            console.log('Loaded suggestions:', data.suggestions);
+        }
+        
+    } catch (error) {
+        console.error('Error loading suggestions:', error);
+    }
+}
+
+// Make functions global for onclick handlers
 window.clearAllFilters = clearAllFilters;
 window.toggleFilters = toggleFilters;
 window.toggleDropdown = toggleDropdown;
 window.clearDropdown = clearDropdown;
 window.removeFilterChip = removeFilterChip;
+window.getNewRecommendations = getNewRecommendations;

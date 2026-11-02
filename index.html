@@ -3,153 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hemant's TV Tracker</title>
+    <title>VideoBuddy</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>📺 Hemant's TV Tracker</h1>
-        </div>
-    </header>
-
     <main class="container">
-        <!-- Tab Navigation -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="newRatings">New Ratings</button>
-            <button class="tab-btn" data-tab="library">Watched</button>
-            <button class="tab-btn" data-tab="notSeen">Not seen</button>
+        <!-- Tab Navigation with Filter Button -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="newRatings">New Ratings</button>
+                <button class="tab-btn" data-tab="library">Watched</button>
+                <button class="tab-btn" data-tab="notSeen">Not seen</button>
+            </div>
+            <button class="filter-icon-btn" id="filterIconBtn" onclick="toggleFilterPanel()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="18" x2="20" y2="18"></line>
+                    <circle cx="7" cy="6" r="2" fill="currentColor"></circle>
+                    <circle cx="14" cy="12" r="2" fill="currentColor"></circle>
+                    <circle cx="17" cy="18" r="2" fill="currentColor"></circle>
+                </svg>
+                <span class="filter-badge-icon" id="globalFilterCount"></span>
+            </button>
         </div>
-
+        
+        <!-- Global Filter Side Panel -->
+        <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterPanel()"></div>
+        <div class="filter-side-panel" id="filterSidePanel">
+            <div class="filter-panel-header">
+                <h3>Filters</h3>
+                <button class="filter-close-btn" onclick="toggleFilterPanel()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="filter-panel-content" id="filterPanelContent">
+                <!-- Filter content will be dynamically populated based on active tab -->
+            </div>
+        </div>
+        
         <!-- Tab Contents -->
         <div class="tab-content">
             <!-- New Ratings (merged Top 5 + Rate Today) -->
             <section id="newRatings" class="tab-pane active">
-                <h2>New Ratings</h2>
-                <p class="section-desc">Discover and rate shows</p>
-                
-                <button class="filters-toggle-btn" onclick="toggleFilters('newRatings')">
-                    Filters <span id="newRatingsFilterCount" class="filter-badge"></span>
-                </button>
-                
-                <div id="newRatingsFilters" class="filters-panel collapsed">
-                    <div class="filters-content">
-                        <div class="filter-row">
-                            <div class="filter-dropdown">
-                                <label>Streaming service</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('newRatingsStreaming')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="newRatingsStreamingDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options" id="newRatingsStreamingOptions"></div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('newRatingsStreaming')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="filter-dropdown">
-                                <label>IMDb rating range</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('newRatingsImdb')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="newRatingsImdbDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options">
-                                            <label><input type="checkbox" value="9+"> 9.0+</label>
-                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
-                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
-                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
-                                        </div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('newRatingsImdb')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn-clear-all" onclick="clearAllFilters('newRatings')">Clear filters</button>
-                        </div>
-                        <div id="newRatingsFilterChips" class="filter-chips"></div>
-                    </div>
+                <div class="action-bar">
+                    <button class="btn-get-picks" id="getNewPicksBtn" onclick="getNewRecommendations()">
+                        ✨ Get new picks
+                    </button>
                 </div>
                 
                 <div id="newRatingsGrid"></div>
             </section>
 
-            <!-- My Shows Library Tab -->
+            <!-- Watched Tab -->
             <section id="library" class="tab-pane">
-                <h2>Watched</h2>
-                
-                <button class="filters-toggle-btn" onclick="toggleFilters('library')">
-                    Filters <span id="libraryFilterCount" class="filter-badge"></span>
-                </button>
-                
-                <div id="libraryFilters" class="filters-panel collapsed">
-                    <div class="filters-content">
-                        <div class="filter-row">
-                            <div class="filter-dropdown">
-                                <label>Streaming service</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStreaming')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="libraryStreamingDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options" id="libraryStreamingOptions"></div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('libraryStreaming')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="filter-dropdown">
-                                <label>Ratings</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryRating')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="libraryRatingDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options">
-                                            <div class="dropdown-section">My Rating</div>
-                                            <label><input type="checkbox" value="loved"> ❤️ Loved</label>
-                                            <label><input type="checkbox" value="okay"> 👍 Okay</label>
-                                            <label><input type="checkbox" value="disliked"> 👎 Disliked</label>
-                                            <div class="dropdown-section">IMDb Rating</div>
-                                            <label><input type="checkbox" value="9+"> 9.0+</label>
-                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
-                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
-                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
-                                        </div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('libraryRating')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="filter-dropdown">
-                                <label>Status</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStatus')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="libraryStatusDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options">
-                                            <label><input type="checkbox" value="Watching"> ▶️ Watching</label>
-                                            <label><input type="checkbox" value="Watched"> ✅ Watched</label>
-                                        </div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('libraryStatus')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="filter-search">
-                                <label>Search</label>
-                                <input type="text" id="searchInput" placeholder="Search shows...">
-                            </div>
-                            <button class="btn-clear-all" onclick="clearAllFilters('library')">Clear filters</button>
-                        </div>
-                        <div id="libraryFilterChips" class="filter-chips"></div>
-                    </div>
-                </div>
-
                 <div id="libraryCount" class="library-count"></div>
                 <div id="libraryGrid" class="library-grid"></div>
                 
@@ -161,53 +73,6 @@
 
             <!-- Not Seen Tab -->
             <section id="notSeen" class="tab-pane">
-                <h2>Not seen</h2>
-                <p class="section-desc">Shows you marked as not seen - rate them later or remove them</p>
-                
-                <button class="filters-toggle-btn" onclick="toggleFilters('notSeen')">
-                    Filters <span id="notSeenFilterCount" class="filter-badge"></span>
-                </button>
-                
-                <div id="notSeenFilters" class="filters-panel collapsed">
-                    <div class="filters-content">
-                        <div class="filter-row">
-                            <div class="filter-dropdown">
-                                <label>Streaming service</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenStreaming')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="notSeenStreamingDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options" id="notSeenStreamingOptions"></div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('notSeenStreaming')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="filter-dropdown">
-                                <label>IMDb rating range</label>
-                                <div class="dropdown-wrapper">
-                                    <button class="dropdown-btn" onclick="toggleDropdown('notSeenImdb')">
-                                        <span class="dropdown-label">Select...</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </button>
-                                    <div id="notSeenImdbDropdown" class="dropdown-menu">
-                                        <div class="dropdown-options">
-                                            <label><input type="checkbox" value="9+"> 9.0+</label>
-                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
-                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
-                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
-                                        </div>
-                                        <button class="dropdown-clear" onclick="clearDropdown('notSeenImdb')">Clear</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn-clear-all" onclick="clearAllFilters('notSeen')">Clear filters</button>
-                        </div>
-                        <div id="notSeenFilterChips" class="filter-chips"></div>
-                    </div>
-                </div>
-
                 <div id="notSeenCount" class="library-count"></div>
                 <div id="notSeenGrid" class="library-grid"></div>
             </section>
@@ -215,9 +80,7 @@
     </main>
 
     <footer>
-        <div class="container">
-            <p>Built with ❤️ for tracking TV shows • Data powered by IMDb & TVmaze</p>
-        </div>
+        <p>Built with ❤️ for tracking TV shows • Data powered by IMDb & TVmaze</p>
     </footer>
 
     <script src="database.js"></script>
