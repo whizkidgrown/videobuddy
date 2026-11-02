@@ -10,60 +10,129 @@
     <header>
         <div class="container">
             <h1>📺 Hemant's TV Tracker</h1>
-            <button id="exportBtn" class="export-btn">Export My Ratings</button>
         </div>
     </header>
 
     <main class="container">
-        <!-- Today's Batch Section -->
-        <section id="todaysBatch" class="section">
-            <h2>Today's Batch</h2>
-            <p class="section-desc">Rate these 7 shows to help refine your recommendations</p>
-            <div id="batchGrid" class="batch-grid"></div>
-        </section>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="topPicks">Top 5 For You</button>
+            <button class="tab-btn" data-tab="todaysBatch">Rate Today</button>
+            <button class="tab-btn" data-tab="library">Watched</button>
+        </div>
 
-        <!-- Top 5 Picks Section -->
-        <section id="topPicks" class="section">
-            <h2>Top 5 For You</h2>
-            <p class="section-desc">Handpicked based on your taste</p>
-            <div id="picksGrid" class="picks-grid"></div>
-        </section>
-
-        <!-- My Shows Library Section -->
-        <section id="library" class="section">
-            <h2>My Shows Library</h2>
-            
-            <!-- Filters -->
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Filter by Rating:</label>
-                    <select id="ratingFilter">
-                        <option value="all">All Ratings</option>
-                        <option value="loved">Loved</option>
-                        <option value="okay">Okay</option>
-                        <option value="disliked">Disliked</option>
-                    </select>
+        <!-- Tab Contents -->
+        <div class="tab-content">
+            <!-- Top 5 Picks Tab -->
+            <section id="topPicks" class="tab-pane active">
+                <h2>Top 5 For You</h2>
+                <p class="section-desc">Handpicked based on your taste</p>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Streaming:</label>
+                        <select id="topPicksStreamingFilter" multiple class="multi-select">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>IMDb Rating:</label>
+                        <select id="topPicksImdbFilter" multiple class="multi-select">
+                            <option value="9+">9.0+</option>
+                            <option value="8-9">8.0-8.9</option>
+                            <option value="7-8">7.0-7.9</option>
+                            <option value="below7">Below 7.0</option>
+                        </select>
+                    </div>
+                    <button class="btn-clear" onclick="clearFilters('topPicks')">Clear Filters</button>
                 </div>
                 
-                <div class="filter-group">
-                    <label>Filter by Status:</label>
-                    <select id="statusFilter">
-                        <option value="all">All Status</option>
-                        <option value="Want to watch">Want to Watch</option>
-                        <option value="Watching">Watching</option>
-                        <option value="Watched">Watched</option>
-                    </select>
+                <div id="picksGrid" class="picks-grid"></div>
+            </section>
+
+            <!-- Today's Batch Tab -->
+            <section id="todaysBatch" class="tab-pane">
+                <h2>Rate Today</h2>
+                <p class="section-desc">Rate these 7 shows to help refine your recommendations</p>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Streaming:</label>
+                        <select id="batchStreamingFilter" multiple class="multi-select">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>IMDb Rating:</label>
+                        <select id="batchImdbFilter" multiple class="multi-select">
+                            <option value="9+">9.0+</option>
+                            <option value="8-9">8.0-8.9</option>
+                            <option value="7-8">7.0-7.9</option>
+                            <option value="below7">Below 7.0</option>
+                        </select>
+                    </div>
+                    <button class="btn-clear" onclick="clearFilters('batch')">Clear Filters</button>
                 </div>
                 
-                <div class="filter-group search-group">
-                    <label>Search:</label>
-                    <input type="text" id="searchInput" placeholder="Search shows...">
-                </div>
-            </div>
+                <div id="batchGrid" class="batch-grid"></div>
+            </section>
 
-            <div id="libraryCount" class="library-count"></div>
-            <div id="libraryGrid" class="library-grid"></div>
-        </section>
+            <!-- My Shows Library Tab -->
+            <section id="library" class="tab-pane">
+                <h2>Watched</h2>
+                
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Streaming:</label>
+                        <select id="libraryStreamingFilter" multiple class="multi-select">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Ratings:</label>
+                        <select id="libraryRatingFilter" multiple class="multi-select">
+                            <optgroup label="My Rating">
+                                <option value="loved">❤️ Loved</option>
+                                <option value="okay">👍 Okay</option>
+                                <option value="disliked">👎 Disliked</option>
+                            </optgroup>
+                            <optgroup label="IMDb Rating">
+                                <option value="9+">9.0+</option>
+                                <option value="8-9">8.0-8.9</option>
+                                <option value="7-8">7.0-7.9</option>
+                                <option value="below7">Below 7.0</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="statusFilter" multiple class="multi-select">
+                            <option value="Want to watch">📌 Want to Watch</option>
+                            <option value="Watching">▶️ Watching</option>
+                            <option value="Watched">✅ Watched</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group search-group">
+                        <label>Search:</label>
+                        <input type="text" id="searchInput" placeholder="Search shows...">
+                    </div>
+                    
+                    <button class="btn-clear" onclick="clearFilters('library')">Clear Filters</button>
+                </div>
+
+                <div id="libraryCount" class="library-count"></div>
+                <div id="libraryGrid" class="library-grid"></div>
+                
+                <!-- Export Link -->
+                <div class="export-container">
+                    <a href="#" id="exportLink" class="export-link">Export my ratings</a>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer>
