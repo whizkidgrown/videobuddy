@@ -770,9 +770,14 @@ footer {
     .filter-search {
         min-width: 100%;
         width: 100%;
+        flex: 1 1 100%;
     }
 
     .dropdown-wrapper {
+        width: 100%;
+    }
+
+    .dropdown-btn {
         width: 100%;
     }
 
