@@ -36,8 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupTabs();
         populateStreamingFilters();
         setupDropdowns();
-        renderTopPicks();
-        renderTodaysBatch();
+        renderNewRatings();
         renderLibrary();
         renderNotSeen();
         setupEventListeners();
@@ -121,8 +120,7 @@ function setupTabs() {
 // Toggle filters panel
 function toggleFilters(tab) {
     const filterMap = {
-        'topPicks': 'topPicksFilters',
-        'batch': 'batchFilters',
+        'newRatings': 'newRatingsFilters',
         'library': 'libraryFilters',
         'notSeen': 'notSeenFilters'
     };
@@ -171,7 +169,7 @@ function populateStreamingFilters() {
     
     const sortedServices = Array.from(services).sort();
     
-    ['topPicksStreaming', 'batchStreaming', 'libraryStreaming', 'notSeenStreaming'].forEach(id => {
+    ['newRatingsStreaming', 'libraryStreaming', 'notSeenStreaming'].forEach(id => {
         const container = document.getElementById(id + 'Options');
         if (container) {
             container.innerHTML = sortedServices.map(service => 
@@ -192,10 +190,8 @@ function setupDropdowns() {
                 updateDropdownLabel(dropdownId);
                 
                 // Trigger appropriate render
-                if (dropdownId.includes('topPicks')) {
-                    renderTopPicks();
-                } else if (dropdownId.includes('batch')) {
-                    renderTodaysBatch();
+                if (dropdownId.includes('newRatings')) {
+                    renderNewRatings();
                 } else if (dropdownId.includes('library')) {
                     renderLibrary();
                 } else if (dropdownId.includes('notSeen')) {
@@ -243,10 +239,8 @@ function clearDropdown(dropdownId) {
     updateDropdownLabel(dropdownId);
     
     // Trigger appropriate render
-    if (dropdownId.includes('topPicks')) {
-        renderTopPicks();
-    } else if (dropdownId.includes('batch')) {
-        renderTodaysBatch();
+    if (dropdownId.includes('newRatings')) {
+        renderNewRatings();
     } else if (dropdownId.includes('library')) {
         renderLibrary();
     } else if (dropdownId.includes('notSeen')) {
@@ -258,12 +252,9 @@ function clearDropdown(dropdownId) {
 
 // Clear all filters for a tab
 function clearAllFilters(tab) {
-    if (tab === 'topPicks') {
-        clearDropdown('topPicksStreaming');
-        clearDropdown('topPicksImdb');
-    } else if (tab === 'batch') {
-        clearDropdown('batchStreaming');
-        clearDropdown('batchImdb');
+    if (tab === 'newRatings') {
+        clearDropdown('newRatingsStreaming');
+        clearDropdown('newRatingsImdb');
     } else if (tab === 'library') {
         clearDropdown('libraryStreaming');
         clearDropdown('libraryRating');
@@ -280,8 +271,7 @@ function clearAllFilters(tab) {
 // Update filter chips
 function updateFilterChips() {
     const tabs = [
-        { tab: 'topPicks', dropdowns: ['topPicksStreaming', 'topPicksImdb'] },
-        { tab: 'batch', dropdowns: ['batchStreaming', 'batchImdb'] },
+        { tab: 'newRatings', dropdowns: ['newRatingsStreaming', 'newRatingsImdb'] },
         { tab: 'library', dropdowns: ['libraryStreaming', 'libraryRating', 'libraryStatus'] },
         { tab: 'notSeen', dropdowns: ['notSeenStreaming', 'notSeenImdb'] }
     ];
@@ -346,10 +336,8 @@ function removeFilterChip(dropdownId, value) {
         updateDropdownLabel(dropdownId);
         
         // Trigger appropriate render
-        if (dropdownId.includes('topPicks')) {
-            renderTopPicks();
-        } else if (dropdownId.includes('batch')) {
-            renderTodaysBatch();
+        if (dropdownId.includes('newRatings')) {
+            renderNewRatings();
         } else if (dropdownId.includes('library')) {
             renderLibrary();
         } else if (dropdownId.includes('notSeen')) {
@@ -561,7 +549,7 @@ async function answerSeen(title, hasSeen) {
     if (hasSeen) {
         // Add to seenYes Set and re-render to show rating controls
         seenYes.add(title);
-        renderTodaysBatch();
+        renderNewRatings();
     } else {
         // Mark as not_seen and save
         userRatings[title] = 'not_seen';
@@ -571,7 +559,7 @@ async function answerSeen(title, hasSeen) {
         }
         
         saveUserData();
-        renderTodaysBatch();
+        renderNewRatings();
         renderNotSeen();
     }
 }
@@ -579,7 +567,7 @@ async function answerSeen(title, hasSeen) {
 // Go back from rating control to "Seen it?" question
 function goBackToSeenQuestion(title) {
     seenYes.delete(title);
-    renderTodaysBatch();
+    renderNewRatings();
 }
 
 // Undo not seen
@@ -588,7 +576,7 @@ async function undoNotSeen(title) {
     saveUserData();
     
     renderNotSeen();
-    renderTodaysBatch();
+    renderNewRatings();
 }
 
 // Skip show (mark as not interested)
@@ -602,7 +590,7 @@ async function skipShow(title) {
     }
     
     saveUserData();
-    renderTopPicks();
+    renderNewRatings();
     renderNotSeen();
 }
 
@@ -612,47 +600,21 @@ async function undoNotInterested(title) {
     saveUserData();
     
     renderNotSeen();
-    renderTopPicks();
+    renderNewRatings();
 }
 
-// Render Today's Batch
-function renderTodaysBatch() {
-    const container = document.getElementById('batchGrid');
-    if (!data || !data.todaysBatch) return;
+// Render New Ratings (merged Top 5 + Rate Today)
+function renderNewRatings() {
+    const container = document.getElementById('newRatingsGrid');
+    if (!data || !data.top5 || !data.todaysBatch) return;
     
-    const streamingFilter = getDropdownValues('batchStreaming');
-    const imdbFilter = getDropdownValues('batchImdb');
+    const streamingFilter = getDropdownValues('newRatingsStreaming');
+    const imdbFilter = getDropdownValues('newRatingsImdb');
     
-    const html = data.todaysBatch
-        .map(title => {
-            const show = getShow(title);
-            if (!show) return '';
-            
-            const userRating = userRatings[show.title];
-            // Exclude rated shows (including not_seen)
-            if (userRating && userRating !== '') return '';
-            
-            if (!matchesStreaming(show, streamingFilter)) return '';
-            if (!matchesImdbRating(show, imdbFilter)) return '';
-            
-            return createShowCard(show, 'rateToday');
-        })
-        .filter(h => h)
-        .join('');
+    let html = '';
     
-    container.innerHTML = html || '<div class="empty-state"><h3>All shows rated!</h3><p>Check the Watched tab to see your ratings.</p></div>';
-    updateFilterChips();
-}
-
-// Render Top Picks
-function renderTopPicks() {
-    const container = document.getElementById('picksGrid');
-    if (!data || !data.top5) return;
-    
-    const streamingFilter = getDropdownValues('topPicksStreaming');
-    const imdbFilter = getDropdownValues('topPicksImdb');
-    
-    const html = data.top5
+    // Section 1: Top picks for you
+    const topPicksHtml = data.top5
         .map(pick => {
             const show = getShow(pick.title);
             if (!show) return '';
@@ -669,7 +631,47 @@ function renderTopPicks() {
         .filter(h => h)
         .join('');
     
-    container.innerHTML = html || '<div class="empty-state"><h3>No shows match your filters</h3><p>Try adjusting your filters or clear them to see all recommendations.</p></div>';
+    if (topPicksHtml) {
+        html += '<div class="subsection">';
+        html += '<h3 class="subsection-title">Top picks for you</h3>';
+        html += '<div class="subsection-grid">';
+        html += topPicksHtml;
+        html += '</div>';
+        html += '</div>';
+    }
+    
+    // Section 2: Have you seen these?
+    const todaysBatchHtml = data.todaysBatch
+        .map(title => {
+            const show = getShow(title);
+            if (!show) return '';
+            
+            const userRating = userRatings[show.title];
+            // Exclude rated shows (including not_seen)
+            if (userRating && userRating !== '') return '';
+            
+            if (!matchesStreaming(show, streamingFilter)) return '';
+            if (!matchesImdbRating(show, imdbFilter)) return '';
+            
+            return createShowCard(show, 'rateToday');
+        })
+        .filter(h => h)
+        .join('');
+    
+    if (todaysBatchHtml) {
+        html += '<div class="subsection">';
+        html += '<h3 class="subsection-title">Have you seen these?</h3>';
+        html += '<div class="subsection-grid">';
+        html += todaysBatchHtml;
+        html += '</div>';
+        html += '</div>';
+    }
+    
+    if (html === '') {
+        html = '<div class="empty-state"><h3>All shows rated!</h3><p>Check the Watched tab to see your ratings.</p></div>';
+    }
+    
+    container.innerHTML = html;
     updateFilterChips();
 }
 
@@ -820,8 +822,7 @@ async function setRating(title, rating) {
     
     saveUserData();
     
-    renderTopPicks();
-    renderTodaysBatch();
+    renderNewRatings();
     renderLibrary();
     renderNotSeen();
 }
@@ -836,8 +837,7 @@ function setStatus(title, status) {
     }
     saveUserData();
     
-    renderTopPicks();
-    renderTodaysBatch();
+    renderNewRatings();
     renderLibrary();
 }
 
