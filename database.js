@@ -1,21 +1,16 @@
 // Database configuration
-// These values will be provided by Hemant after setting up Supabase
 const SUPABASE_CONFIG = {
-    url: 'YOUR_SUPABASE_URL', // Will be replaced with actual URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY' // Safe to expose - restricted by RLS
+    url: 'https://xarftlanzdfuzwrfewqw.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcmZ0bGFuemRmdXp3cmZld3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTAwMTUsImV4cCI6MjEwOTIyNjAxNX0.PrsAQsjGC_O10YeFcAbSz80pJwdzwoFfqGDK6YljuX0'
 };
 
 // Initialize Supabase client (using CDN version)
 let supabase = null;
 
 function initSupabase() {
-    if (SUPABASE_CONFIG.url === 'YOUR_SUPABASE_URL') {
-        console.warn('Supabase not configured. Using localStorage only.');
-        return false;
-    }
-    
     try {
         supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        console.log('✓ Supabase initialized');
         return true;
     } catch (error) {
         console.error('Failed to initialize Supabase:', error);
@@ -35,13 +30,14 @@ async function saveRatingToDatabase(title, rating, imdb_id = null) {
                 rating: rating,
                 imdb_id: imdb_id,
                 rated_at: new Date().toISOString(),
-                user_agent: navigator.userAgent.substring(0, 100) // For basic tracking
+                user_agent: navigator.userAgent.substring(0, 100)
             }, {
-                onConflict: 'show_title'
+                onConflict: 'show_title',
+                ignoreDuplicates: false
             });
         
         if (error) throw error;
-        console.log('Rating saved to database:', title, rating);
+        console.log('✓ Rating saved to database:', title, rating);
         return true;
     } catch (error) {
         console.error('Failed to save to database:', error);

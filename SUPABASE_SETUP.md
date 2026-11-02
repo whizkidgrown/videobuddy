@@ -52,6 +52,12 @@ CREATE POLICY "Allow anonymous updates" ON ratings
     TO anon
     USING (true);
 
+-- Allow anonymous selects (for loading existing ratings)
+CREATE POLICY "Allow anonymous selects" ON ratings
+    FOR SELECT
+    TO anon
+    USING (true);
+
 -- Create index for faster lookups
 CREATE INDEX idx_ratings_show_title ON ratings(show_title);
 CREATE INDEX idx_ratings_rated_at ON ratings(rated_at DESC);
@@ -181,9 +187,9 @@ GET /rest/v1/ratings?rated_at=gte.2026-10-26T00:00:00Z&select=*
 - Both are in client-side code and that's by design
 
 ✅ **Protected by RLS:**
-- Anonymous users can only INSERT and UPDATE ratings
+- Anonymous users can INSERT, UPDATE, and SELECT ratings
 - They CANNOT DELETE ratings
-- Read access requires authentication (your assistant uses the anon key)
+- Read access available for loading user's own ratings and for assistant queries
 
 ✅ **No GitHub tokens:**
 - No write access tokens in the code
