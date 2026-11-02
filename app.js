@@ -93,6 +93,11 @@ function getShow(title) {
     return data.shows.find(s => s.title === title);
 }
 
+// Check if rating is a real rating (not metadata like not_seen/not_interested)
+function isRealRating(rating) {
+    return rating && ['loved', 'okay', 'disliked'].includes(rating);
+}
+
 // Setup tabs
 function setupTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -467,8 +472,9 @@ function createShowCard(show, cardType = 'default') {
     const isRateToday = cardType === 'rateToday';
     const isTopPick = cardType === 'showRating';
     const hasSeenYes = seenYes.has(show.title);
+    const hasRealRating = isRealRating(userRating);
     const showSeenQuestion = isRateToday && !userRating && !hasSeenYes;
-    const showRatingControl = (isRateToday && (userRating || hasSeenYes)) || isTopPick || userRating;
+    const showRatingControl = (isRateToday && (hasRealRating || hasSeenYes)) || (isTopPick && !userRating) || hasRealRating;
     
     return `
         <div class="show-card horizontal" data-title="${show.title.replace(/"/g, '&quot;')}">
@@ -503,7 +509,7 @@ function createShowCard(show, cardType = 'default') {
                 ` : ''}
                 
                 ${showRatingControl ? `
-                    ${hasSeenYes && !userRating ? '<a href="#" class="back-link" data-action="seenBack">← Back</a>' : ''}
+                    ${hasSeenYes && !hasRealRating ? '<a href="#" class="back-link" data-action="seenBack">← Back</a>' : ''}
                     <div class="rating-control">
                         <button class="rating-btn ${userRating === 'loved' ? 'active loved' : ''}" 
                                 data-action="rate" data-rating="loved">❤️</button>
@@ -535,7 +541,7 @@ function createShowCard(show, cardType = 'default') {
                     </div>
                 ` : ''}
                 
-                ${cardType === 'default' && !userRating ? `
+                ${cardType === 'default' && !hasRealRating ? `
                     <div class="status-control">
                         <button class="status-btn ${userStatus === 'Watching' ? 'active' : ''}" 
                                 data-action="status" data-status="Watching">▶️ Watching</button>
@@ -766,17 +772,21 @@ function renderNotSeen() {
     
     // Not Seen section
     if (notSeenShows.length > 0) {
+        html += '<div class="subsection">';
         html += '<h3 class="subsection-title">Not seen</h3>';
         html += '<div class="subsection-grid">';
         html += notSeenShows.map(show => createShowCard(show, 'notSeen')).join('');
+        html += '</div>';
         html += '</div>';
     }
     
     // Not Interested section
     if (notInterestedShows.length > 0) {
+        html += '<div class="subsection">';
         html += '<h3 class="subsection-title">Not interested</h3>';
         html += '<div class="subsection-grid">';
         html += notInterestedShows.map(show => createShowCard(show, 'notInterested')).join('');
+        html += '</div>';
         html += '</div>';
     }
     

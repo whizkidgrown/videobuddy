@@ -389,15 +389,15 @@ main {
     color: var(--accent);
 }
 
-/* Horizontal Card Layout */
+/* Horizontal Card Layout - Compact */
 .show-card.horizontal {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     background-color: var(--bg-card);
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid var(--border);
-    padding: 12px;
+    padding: 10px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -408,8 +408,8 @@ main {
 
 .card-poster {
     flex-shrink: 0;
-    width: 90px;
-    height: 135px;
+    width: 65px;
+    height: 98px;
     background-color: var(--bg-hover);
     border-radius: 4px;
     overflow: hidden;
@@ -605,30 +605,26 @@ main {
 }
 
 /* Subsections in Not Seen Tab */
+.subsection {
+    margin-bottom: 30px;
+}
+
+.subsection:last-child {
+    margin-bottom: 0;
+}
+
 .subsection-title {
     font-size: 1.2rem;
     color: var(--text-primary);
-    margin-top: 30px;
     margin-bottom: 15px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
 }
 
-.subsection-title:first-child {
-    margin-top: 0;
-}
-
 .subsection-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 15px;
-    margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-    .subsection-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Rating Control */
@@ -729,12 +725,12 @@ main {
     border-color: var(--accent);
 }
 
-/* Grids - 2 columns on desktop, 1 on mobile */
+/* Grids - Auto-fill with compact cards */
 .batch-grid,
 .picks-grid,
 .library-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 15px;
 }
 
@@ -839,21 +835,15 @@ footer {
         width: 100%;
     }
 
-    /* Single column on mobile */
-    .batch-grid,
-    .picks-grid,
-    .library-grid {
-        grid-template-columns: 1fr;
-    }
-
+    /* Let auto-fill handle columns naturally on mobile */
     .show-card.horizontal {
-        gap: 12px;
-        padding: 10px;
+        gap: 10px;
+        padding: 8px;
     }
 
     .card-poster {
-        width: 70px;
-        height: 105px;
+        width: 60px;
+        height: 90px;
     }
 
     .card-title {
