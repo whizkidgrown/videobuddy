@@ -10,24 +10,20 @@
   ],
   "top5": [
     {
-      "title": "Happy Valley",
-      "pitch": "Tough Yorkshire sergeant confronts a kidnapper in this gripping British crime drama"
+      "title": "Dept. Q",
+      "pitch": "Matthew Goode runs an Edinburgh cold-case unit; Happy Valley/Line of Duty lane"
     },
     {
-      "title": "The Capture",
-      "pitch": "Surveillance thriller questioning what's real when video evidence can be manipulated"
+      "title": "Black Doves",
+      "pitch": "Keira Knightley spy in London with Ben Whishaw as her hitman minder"
     },
     {
-      "title": "The Americans",
-      "pitch": "Soviet spies posing as Americans during the Cold War, balancing espionage and family"
+      "title": "The Chestnut Man",
+      "pitch": "Nordic serial-killer hunt like The Killing/The Bridge"
     },
     {
-      "title": "Le Bureau",
-      "pitch": "Elite French intelligence officers navigate dangerous undercover missions abroad"
-    },
-    {
-      "title": "Wallander",
-      "pitch": "Kenneth Branagh as troubled Swedish detective solving dark crimes in Ystad"
+      "title": "Suzhal - The Vortex",
+      "pitch": "Missing-girl mystery in small-town Tamil Nadu, close to Kohrra"
     }
   ],
   "shows": [
@@ -2303,6 +2299,69 @@
       "rating": "loved",
       "status": "Watched",
       "streaming": "Netflix"
+    },
+    {
+      "title": "Dept. Q",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/571/1427771.jpg",
+      "year": "2025",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt27995114",
+      "imdb_rating": "8.1",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Black Doves",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/642/1607270.jpg",
+      "year": "2024",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt27995113",
+      "imdb_rating": "7.2",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "The Chestnut Man",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/624/1561369.jpg",
+      "year": "2021",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Mystery"
+      ],
+      "lang": "Danish",
+      "imdb_id": "tt10834220",
+      "imdb_rating": "7.6",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Suzhal - The Vortex",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/414/1035563.jpg",
+      "year": "2022",
+      "genres": [
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "Tamil",
+      "imdb_id": "tt20873118",
+      "imdb_rating": "8.1",
+      "rating": "",
+      "status": "",
+      "streaming": "Prime Video"
     }
   ]
 }

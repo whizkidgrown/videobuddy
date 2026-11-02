@@ -446,7 +446,11 @@ function getPitch(title) {
         'The Capture': 'When video evidence can be manipulated',
         'The Americans': 'Soviet spies posing as Americans',
         'Le Bureau': 'French intelligence officers on missions abroad',
-        'Wallander': 'Troubled Swedish detective solving dark crimes'
+        'Wallander': 'Troubled Swedish detective solving dark crimes',
+        'Dept. Q': 'Matthew Goode runs an Edinburgh cold-case unit; Happy Valley/Line of Duty lane',
+        'Black Doves': 'Keira Knightley spy in London with Ben Whishaw as her hitman minder',
+        'The Chestnut Man': 'Nordic serial-killer hunt like The Killing/The Bridge',
+        'Suzhal - The Vortex': 'Missing-girl mystery in small-town Tamil Nadu, close to Kohrra'
     };
     return pitches[title] || '';
 }
