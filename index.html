@@ -30,27 +30,48 @@
                 <h2>Top 5 For You</h2>
                 <p class="section-desc">Handpicked based on your taste</p>
                 
-                <button class="filter-toggle" onclick="toggleFilters('topPicks')">
-                    🔍 Filters <span id="topPicksFilterCount" class="filter-count"></span>
+                <button class="filters-toggle-btn" onclick="toggleFilters('topPicks')">
+                    Filters <span id="topPicksFilterCount" class="filter-badge"></span>
                 </button>
                 
-                <div id="topPicksFilters" class="filters">
-                    <div class="filter-group">
-                        <label>Streaming:</label>
-                        <select id="topPicksStreamingFilter" multiple class="multi-select">
-                            <option value="">Loading...</option>
-                        </select>
+                <div id="topPicksFilters" class="filters-panel collapsed">
+                    <div class="filters-content">
+                        <div class="filter-row">
+                            <div class="filter-dropdown">
+                                <label>Streaming service</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('topPicksStreaming')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="topPicksStreamingDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options" id="topPicksStreamingOptions"></div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('topPicksStreaming')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-dropdown">
+                                <label>IMDb rating range</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('topPicksImdb')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="topPicksImdbDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options">
+                                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                                        </div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('topPicksImdb')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-clear-all" onclick="clearAllFilters('topPicks')">Clear filters</button>
+                        </div>
+                        <div id="topPicksFilterChips" class="filter-chips"></div>
                     </div>
-                    <div class="filter-group">
-                        <label>IMDb Rating:</label>
-                        <select id="topPicksImdbFilter" multiple class="multi-select">
-                            <option value="9+">9.0+</option>
-                            <option value="8-9">8.0-8.9</option>
-                            <option value="7-8">7.0-7.9</option>
-                            <option value="below7">Below 7.0</option>
-                        </select>
-                    </div>
-                    <button class="btn-clear" onclick="clearFilters('topPicks')">Clear Filters</button>
                 </div>
                 
                 <div id="picksGrid" class="picks-grid"></div>
@@ -61,27 +82,48 @@
                 <h2>Rate Today</h2>
                 <p class="section-desc">Rate these shows - they'll move to Watched once rated</p>
                 
-                <button class="filter-toggle" onclick="toggleFilters('batch')">
-                    🔍 Filters <span id="batchFilterCount" class="filter-count"></span>
+                <button class="filters-toggle-btn" onclick="toggleFilters('batch')">
+                    Filters <span id="batchFilterCount" class="filter-badge"></span>
                 </button>
                 
-                <div id="batchFilters" class="filters">
-                    <div class="filter-group">
-                        <label>Streaming:</label>
-                        <select id="batchStreamingFilter" multiple class="multi-select">
-                            <option value="">Loading...</option>
-                        </select>
+                <div id="batchFilters" class="filters-panel collapsed">
+                    <div class="filters-content">
+                        <div class="filter-row">
+                            <div class="filter-dropdown">
+                                <label>Streaming service</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('batchStreaming')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="batchStreamingDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options" id="batchStreamingOptions"></div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('batchStreaming')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-dropdown">
+                                <label>IMDb rating range</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('batchImdb')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="batchImdbDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options">
+                                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                                        </div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('batchImdb')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-clear-all" onclick="clearAllFilters('batch')">Clear filters</button>
+                        </div>
+                        <div id="batchFilterChips" class="filter-chips"></div>
                     </div>
-                    <div class="filter-group">
-                        <label>IMDb Rating:</label>
-                        <select id="batchImdbFilter" multiple class="multi-select">
-                            <option value="9+">9.0+</option>
-                            <option value="8-9">8.0-8.9</option>
-                            <option value="7-8">7.0-7.9</option>
-                            <option value="below7">Below 7.0</option>
-                        </select>
-                    </div>
-                    <button class="btn-clear" onclick="clearFilters('batch')">Clear Filters</button>
                 </div>
                 
                 <div id="batchGrid" class="batch-grid"></div>
@@ -91,50 +133,73 @@
             <section id="library" class="tab-pane">
                 <h2>Watched</h2>
                 
-                <button class="filter-toggle" onclick="toggleFilters('library')">
-                    🔍 Filters <span id="libraryFilterCount" class="filter-count"></span>
+                <button class="filters-toggle-btn" onclick="toggleFilters('library')">
+                    Filters <span id="libraryFilterCount" class="filter-badge"></span>
                 </button>
                 
-                <div id="libraryFilters" class="filters">
-                    <div class="filter-group">
-                        <label>Streaming:</label>
-                        <select id="libraryStreamingFilter" multiple class="multi-select">
-                            <option value="">Loading...</option>
-                        </select>
+                <div id="libraryFilters" class="filters-panel collapsed">
+                    <div class="filters-content">
+                        <div class="filter-row">
+                            <div class="filter-dropdown">
+                                <label>Streaming service</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStreaming')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="libraryStreamingDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options" id="libraryStreamingOptions"></div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('libraryStreaming')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-dropdown">
+                                <label>Ratings</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryRating')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="libraryRatingDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options">
+                                            <div class="dropdown-section">My Rating</div>
+                                            <label><input type="checkbox" value="loved"> ❤️ Loved</label>
+                                            <label><input type="checkbox" value="okay"> 👍 Okay</label>
+                                            <label><input type="checkbox" value="disliked"> 👎 Disliked</label>
+                                            <div class="dropdown-section">IMDb Rating</div>
+                                            <label><input type="checkbox" value="9+"> 9.0+</label>
+                                            <label><input type="checkbox" value="8-9"> 8.0-8.9</label>
+                                            <label><input type="checkbox" value="7-8"> 7.0-7.9</label>
+                                            <label><input type="checkbox" value="below7"> Below 7.0</label>
+                                        </div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('libraryRating')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-dropdown">
+                                <label>Status</label>
+                                <div class="dropdown-wrapper">
+                                    <button class="dropdown-btn" onclick="toggleDropdown('libraryStatus')">
+                                        <span class="dropdown-label">Select...</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </button>
+                                    <div id="libraryStatusDropdown" class="dropdown-menu">
+                                        <div class="dropdown-options">
+                                            <label><input type="checkbox" value="Watching"> ▶️ Watching</label>
+                                            <label><input type="checkbox" value="Watched"> ✅ Watched</label>
+                                        </div>
+                                        <button class="dropdown-clear" onclick="clearDropdown('libraryStatus')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-search">
+                                <label>Search</label>
+                                <input type="text" id="searchInput" placeholder="Search shows...">
+                            </div>
+                            <button class="btn-clear-all" onclick="clearAllFilters('library')">Clear filters</button>
+                        </div>
+                        <div id="libraryFilterChips" class="filter-chips"></div>
                     </div>
-                    
-                    <div class="filter-group">
-                        <label>Ratings:</label>
-                        <select id="libraryRatingFilter" multiple class="multi-select">
-                            <optgroup label="My Rating">
-                                <option value="loved">❤️ Loved</option>
-                                <option value="okay">👍 Okay</option>
-                                <option value="disliked">👎 Disliked</option>
-                            </optgroup>
-                            <optgroup label="IMDb Rating">
-                                <option value="9+">9.0+</option>
-                                <option value="8-9">8.0-8.9</option>
-                                <option value="7-8">7.0-7.9</option>
-                                <option value="below7">Below 7.0</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>Status:</label>
-                        <select id="statusFilter" multiple class="multi-select">
-                            <option value="Want to watch">📌 Want to Watch</option>
-                            <option value="Watching">▶️ Watching</option>
-                            <option value="Watched">✅ Watched</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group search-group">
-                        <label>Search:</label>
-                        <input type="text" id="searchInput" placeholder="Search shows...">
-                    </div>
-                    
-                    <button class="btn-clear" onclick="clearFilters('library')">Clear Filters</button>
                 </div>
 
                 <div id="libraryCount" class="library-count"></div>

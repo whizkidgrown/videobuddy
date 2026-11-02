@@ -1,0 +1,26 @@
+{
+  "name": "videobuddy",
+  "version": "1.0.0",
+  "description": "A beautiful, dark IMDb-style personal TV tracker to rate and track shows.",
+  "main": "app.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whizkidgrown/videobuddy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/whizkidgrown/videobuddy/issues"
+  },
+  "homepage": "https://github.com/whizkidgrown/videobuddy#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "http-server": "^14.1.1"
+  }
+}
