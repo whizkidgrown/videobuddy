@@ -58,7 +58,7 @@ function createShowCard(show, includeRatingButtons = false, includePitch = false
     const userRating = userRatings[show.title] || show.rating;
     const userStatus = userStatuses[show.title] || show.status;
     
-    const imdbUrl = `https://www.imdb.com/title/${show.imdb_id}/`;
+    const imdbUrl = show.imdb_id ? `https://www.imdb.com/title/${show.imdb_id}/` : null;
     
     return `
         <div class="show-card" data-title="${show.title}">
@@ -69,7 +69,7 @@ function createShowCard(show, includeRatingButtons = false, includePitch = false
                 <div class="fallback" style="display: none;">
                     📺<br>${show.title}
                 </div>
-                ${show.imdb_rating && show.imdb_rating !== 'N/A' ? 
+                ${show.imdb_rating && show.imdb_rating !== 'N/A' && show.imdb_rating !== null ? 
                     `<div class="imdb-badge">
                         <span>⭐</span>
                         <span>${show.imdb_rating}</span>
@@ -77,7 +77,9 @@ function createShowCard(show, includeRatingButtons = false, includePitch = false
             </div>
             <div class="card-content">
                 <div class="card-title">
-                    <a href="${imdbUrl}" target="_blank" rel="noopener noreferrer">${show.title}</a>
+                    ${imdbUrl ? 
+                        `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer">${show.title}</a>` :
+                        `<span>${show.title}</span>`}
                 </div>
                 <div class="card-meta">
                     ${show.year} • ${show.lang}
@@ -146,7 +148,12 @@ function getPitch(title) {
         'Mare of Easttown': 'Small-town detective investigates murder while dealing with personal tragedy',
         'Kohrra': 'Two cops investigate a murder in rural Punjab, uncovering village secrets',
         'The Diplomat': 'US ambassador in London navigates international crises and marriage troubles',
-        'Broadchurch': 'Coastal town rocked by child murder investigation that exposes dark secrets'
+        'Broadchurch': 'Coastal town rocked by child murder investigation that exposes dark secrets',
+        'Happy Valley': 'Tough Yorkshire sergeant confronts a kidnapper in this gripping British crime drama',
+        'The Capture': 'Surveillance thriller questioning what\'s real when video evidence can be manipulated',
+        'The Americans': 'Soviet spies posing as Americans during the Cold War, balancing espionage and family',
+        'Le Bureau': 'Elite French intelligence officers navigate dangerous undercover missions abroad',
+        'Wallander': 'Kenneth Branagh as troubled Swedish detective solving dark crimes in Ystad'
     };
     return pitches[title] || '';
 }

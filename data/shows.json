@@ -1,36 +1,52 @@
 {
   "todaysBatch": [
-    "Slow Horses",
-    "Mare of Easttown",
-    "Kohrra",
-    "Endeavour",
-    "The Diplomat",
-    "Rocket Boys",
-    "Broadchurch"
+    "Deadwind",
+    "Rebus",
+    "Inspector Rishi",
+    "Duranga",
+    "Justified",
+    "Mr. Robot",
+    "Taboo"
   ],
   "top5": [
     {
-      "title": "Chernobyl",
-      "pitch": "The harrowing true story of the 1986 nuclear disaster"
+      "title": "Happy Valley",
+      "pitch": "Tough Yorkshire sergeant confronts a kidnapper in this gripping British crime drama"
     },
     {
-      "title": "Scam 1992",
-      "pitch": "Rise and fall of Indias biggest stockbroker in a riveting financial thriller"
+      "title": "The Capture",
+      "pitch": "Surveillance thriller questioning what's real when video evidence can be manipulated"
     },
     {
-      "title": "Game of Thrones",
-      "pitch": "Epic fantasy saga of power, betrayal, and dragons"
+      "title": "The Americans",
+      "pitch": "Soviet spies posing as Americans during the Cold War, balancing espionage and family"
     },
     {
-      "title": "Sherlock",
-      "pitch": "Modern-day Sherlock Holmes solves impossible cases in London"
+      "title": "Le Bureau",
+      "pitch": "Elite French intelligence officers navigate dangerous undercover missions abroad"
     },
     {
-      "title": "Better Call Saul",
-      "pitch": "Breaking Bad prequel following a con-man lawyers transformation"
+      "title": "Wallander",
+      "pitch": "Kenneth Branagh as troubled Swedish detective solving dark crimes in Ystad"
     }
   ],
   "shows": [
+    {
+      "title": "24",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2330.jpg",
+      "year": "2001",
+      "genres": [
+        "Drama",
+        "Action",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt0285331",
+      "imdb_rating": "8.4",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Hulu"
+    },
     {
       "title": "Slow Horses",
       "img": "https://static.tvmaze.com/uploads/images/medium_portrait/641/1604425.jpg",
@@ -411,6 +427,18 @@
       "streaming": "Apple TV+"
     },
     {
+      "title": "Kohrra",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/468/1170715.jpg",
+      "year": "2023",
+      "genres": [],
+      "lang": "Panjabi",
+      "imdb_id": "tt21288482",
+      "imdb_rating": "N/A",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
       "title": "The Diplomat",
       "img": "https://static.tvmaze.com/uploads/images/medium_portrait/646/1615567.jpg",
       "year": "2023",
@@ -548,7 +576,7 @@
       "imdb_rating": "8.6",
       "rating": "loved",
       "status": "",
-      "streaming": "Hulu/FX"
+      "streaming": "Hulu"
     },
     {
       "title": "Rome",
@@ -594,7 +622,7 @@
       "imdb_rating": "8.4",
       "rating": "loved",
       "status": "",
-      "streaming": "Netflix/Peacock"
+      "streaming": "Netflix"
     },
     {
       "title": "Rocket Boys",
@@ -644,22 +672,6 @@
       "streaming": "JioCinema"
     },
     {
-      "title": "24",
-      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2330.jpg",
-      "year": "2001",
-      "genres": [
-        "Drama",
-        "Action",
-        "Thriller"
-      ],
-      "lang": "English",
-      "imdb_id": "tt0285331",
-      "imdb_rating": "8.4",
-      "rating": "loved",
-      "status": "",
-      "streaming": "Hulu"
-    },
-    {
       "title": "The Blacklist",
       "img": "https://static.tvmaze.com/uploads/images/medium_portrait/445/1113538.jpg",
       "year": "2013",
@@ -705,7 +717,7 @@
       "imdb_rating": "7.9",
       "rating": "loved",
       "status": "",
-      "streaming": "BritBox/Acorn"
+      "streaming": "BritBox"
     },
     {
       "title": "Inspector Morse",
@@ -918,7 +930,7 @@
       "imdb_rating": "7.4",
       "rating": "loved",
       "status": "",
-      "streaming": "BritBox/Acorn"
+      "streaming": "BritBox"
     },
     {
       "title": "Endeavour",
@@ -1187,7 +1199,7 @@
       "imdb_rating": "8.5",
       "rating": "okay",
       "status": "",
-      "streaming": "Netflix/Prime Video"
+      "streaming": "Netflix"
     },
     {
       "title": "Foundation",
@@ -1619,6 +1631,18 @@
       "streaming": "SonyLIV"
     },
     {
+      "title": "Mumbai Diaries 26/11",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/493/1234919.jpg",
+      "year": "2021",
+      "genres": [],
+      "lang": "Hindi",
+      "imdb_id": "tt13610654",
+      "imdb_rating": "N/A",
+      "rating": "okay",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
       "title": "Bhaukaal",
       "img": "https://static.tvmaze.com/uploads/images/medium_portrait/278/696534.jpg",
       "year": "2020",
@@ -1631,7 +1655,7 @@
       "imdb_rating": "7.7",
       "rating": "okay",
       "status": "",
-      "streaming": "MX Player"
+      "streaming": ""
     },
     {
       "title": "Dahaad",
@@ -1837,7 +1861,7 @@
       "imdb_rating": "8.0",
       "rating": "disliked",
       "status": "",
-      "streaming": "Max/Hulu"
+      "streaming": "Max"
     },
     {
       "title": "Baby Reindeer",
@@ -2039,7 +2063,7 @@
       "imdb_rating": "8.2",
       "rating": "disliked",
       "status": "",
-      "streaming": "BritBox/Acorn"
+      "streaming": "BritBox"
     },
     {
       "title": "Little Boy Blue",
@@ -2068,6 +2092,185 @@
       "imdb_id": "tt1843678",
       "imdb_rating": "8.0",
       "rating": "seen",
+      "status": "",
+      "streaming": "BritBox"
+    },
+    {
+      "title": "Wallander",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/7/17620.jpg",
+      "year": "2008",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt1178618",
+      "imdb_rating": "7.8",
+      "rating": "",
+      "status": "",
+      "streaming": "PBS/BritBox"
+    },
+    {
+      "title": "Deadwind",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/151/377808.jpg",
+      "year": "2018",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "Finnish",
+      "imdb_id": "tt6616260",
+      "imdb_rating": "7.3",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Inspector Rishi",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/516/1290847.jpg",
+      "year": "2024",
+      "genres": [],
+      "lang": "Tamil",
+      "imdb_id": "tt27688034",
+      "imdb_rating": "N/A",
+      "rating": "",
+      "status": "",
+      "streaming": ""
+    },
+    {
+      "title": "Justified",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/0/808.jpg",
+      "year": "2010",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Western"
+      ],
+      "lang": "English",
+      "imdb_id": "tt1489428",
+      "imdb_rating": "8.6",
+      "rating": "",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Mr. Robot",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/211/528026.jpg",
+      "year": "2015",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4158110",
+      "imdb_rating": "8.5",
+      "rating": "",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
+      "title": "Taboo",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/137/343264.jpg",
+      "year": "2017",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt3647998",
+      "imdb_rating": "8.3",
+      "rating": "",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Duranga",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/484/1210152.jpg",
+      "year": "2022",
+      "genres": [],
+      "lang": "Hindi",
+      "imdb_id": "tt21370880",
+      "imdb_rating": "7.4",
+      "rating": "",
+      "status": "",
+      "streaming": "ZEE5"
+    },
+    {
+      "title": "Happy Valley",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/1/4886.jpg",
+      "year": "2014",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt3428912",
+      "imdb_rating": "8.5",
+      "rating": "",
+      "status": "",
+      "streaming": "BritBox"
+    },
+    {
+      "title": "The Capture",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/616/1542367.jpg",
+      "year": "2019",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt8201186",
+      "imdb_rating": "8.0",
+      "rating": "",
+      "status": "",
+      "streaming": "Peacock"
+    },
+    {
+      "title": "The Americans",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/146/366911.jpg",
+      "year": "2013",
+      "genres": [
+        "Drama",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt2149175",
+      "imdb_rating": "8.4",
+      "rating": "",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Le Bureau",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/247/619649.jpg",
+      "year": "2015",
+      "genres": [
+        "Drama",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4063800",
+      "imdb_rating": "8.7",
+      "rating": "",
+      "status": "",
+      "streaming": "Paramount+"
+    },
+    {
+      "title": "Rebus",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/519/1299085.jpg",
+      "year": "2024",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt11116780",
+      "imdb_rating": "7.0",
+      "rating": "",
       "status": "",
       "streaming": "BritBox"
     },
