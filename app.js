@@ -465,9 +465,10 @@ function createShowCard(show, cardType = 'default') {
     
     // For Rate Today: show "Seen it?" first, unless user clicked Yes or already rated
     const isRateToday = cardType === 'rateToday';
+    const isTopPick = cardType === 'showRating';
     const hasSeenYes = seenYes.has(show.title);
     const showSeenQuestion = isRateToday && !userRating && !hasSeenYes;
-    const showRatingControl = (isRateToday && (userRating || hasSeenYes)) || cardType === 'showRating' || userRating;
+    const showRatingControl = (isRateToday && (userRating || hasSeenYes)) || isTopPick || userRating;
     
     return `
         <div class="show-card horizontal" data-title="${show.title.replace(/"/g, '&quot;')}">
@@ -513,6 +514,10 @@ function createShowCard(show, cardType = 'default') {
                     </div>
                 ` : ''}
                 
+                ${isTopPick && !userRating ? `
+                    <button class="skip-btn" data-action="skip">Skip · not interested</button>
+                ` : ''}
+                
                 ${cardType === 'notSeen' ? `
                     <div class="not-seen-actions">
                         <button class="undo-btn" data-action="undoNotSeen">Remove from list</button>
@@ -521,6 +526,12 @@ function createShowCard(show, cardType = 'default') {
                             <button class="rating-btn" data-action="rate" data-rating="okay">👍</button>
                             <button class="rating-btn" data-action="rate" data-rating="disliked">👎</button>
                         </div>
+                    </div>
+                ` : ''}
+                
+                ${cardType === 'notInterested' ? `
+                    <div class="not-interested-actions">
+                        <button class="undo-btn" data-action="undoNotInterested">Undo · I'm interested</button>
                     </div>
                 ` : ''}
                 
@@ -574,6 +585,30 @@ async function undoNotSeen(title) {
     renderTodaysBatch();
 }
 
+// Skip show (mark as not interested)
+async function skipShow(title) {
+    const show = getShow(title);
+    
+    userRatings[title] = 'not_interested';
+    
+    if (databaseEnabled && show) {
+        await saveRatingToDatabase(title, 'not_interested', show.imdb_id);
+    }
+    
+    saveUserData();
+    renderTopPicks();
+    renderNotSeen();
+}
+
+// Undo not interested
+async function undoNotInterested(title) {
+    delete userRatings[title];
+    saveUserData();
+    
+    renderNotSeen();
+    renderTopPicks();
+}
+
 // Render Today's Batch
 function renderTodaysBatch() {
     const container = document.getElementById('batchGrid');
@@ -617,7 +652,7 @@ function renderTopPicks() {
             if (!show) return '';
             
             const userRating = userRatings[show.title] || show.rating;
-            // Exclude any rated shows (including not_seen)
+            // Exclude any rated shows (including not_seen and not_interested)
             if (userRating) return '';
             
             if (!matchesStreaming(show, streamingFilter)) return '';
@@ -632,7 +667,7 @@ function renderTopPicks() {
     updateFilterChips();
 }
 
-// Render Library (Watched - excluding not_seen)
+// Render Library (Watched - excluding not_seen and not_interested)
 function renderLibrary() {
     const container = document.getElementById('libraryGrid');
     const countEl = document.getElementById('libraryCount');
@@ -649,8 +684,8 @@ function renderLibrary() {
     let filtered = data.shows.filter(show => {
         const rating = userRatings[show.title] || show.rating;
         
-        // Exclude not_seen
-        if (rating === 'not_seen') return false;
+        // Exclude not_seen and not_interested
+        if (rating === 'not_seen' || rating === 'not_interested') return false;
         
         if (!matchesStreaming(show, streamingFilter)) return false;
         if (userRatingFilter.length > 0 && !matchesUserRating(show, userRatingFilter)) return false;
@@ -681,7 +716,7 @@ function renderLibrary() {
     updateFilterChips();
 }
 
-// Render Not Seen
+// Render Not Seen (with separate sections for not_seen and not_interested)
 function renderNotSeen() {
     const container = document.getElementById('notSeenGrid');
     const countEl = document.getElementById('notSeenCount');
@@ -690,7 +725,8 @@ function renderNotSeen() {
     const streamingFilter = getDropdownValues('notSeenStreaming');
     const imdbFilter = getDropdownValues('notSeenImdb');
     
-    let filtered = data.shows.filter(show => {
+    // Separate not_seen and not_interested
+    let notSeenShows = data.shows.filter(show => {
         const rating = userRatings[show.title];
         if (rating !== 'not_seen') return false;
         
@@ -700,21 +736,55 @@ function renderNotSeen() {
         return true;
     });
     
-    filtered.sort((a, b) => {
+    let notInterestedShows = data.shows.filter(show => {
+        const rating = userRatings[show.title];
+        if (rating !== 'not_interested') return false;
+        
+        if (!matchesStreaming(show, streamingFilter)) return false;
+        if (!matchesImdbRating(show, imdbFilter)) return false;
+        
+        return true;
+    });
+    
+    // Sort both by IMDb rating
+    const sortByRating = (a, b) => {
         const ratingA = parseFloat(a.imdb_rating) || 0;
         const ratingB = parseFloat(b.imdb_rating) || 0;
         return ratingB - ratingA;
-    });
+    };
+    
+    notSeenShows.sort(sortByRating);
+    notInterestedShows.sort(sortByRating);
+    
+    const totalCount = notSeenShows.length + notInterestedShows.length;
     
     if (countEl) {
-        countEl.textContent = `${filtered.length} show${filtered.length !== 1 ? 's' : ''} marked as not seen`;
+        countEl.textContent = `${totalCount} show${totalCount !== 1 ? 's' : ''} marked`;
     }
     
-    const html = filtered
-        .map(show => createShowCard(show, 'notSeen'))
-        .join('');
+    let html = '';
     
-    container.innerHTML = html || '<div class="empty-state"><h3>No shows marked as not seen</h3><p>When you mark shows as not seen in Rate Today, they\'ll appear here.</p></div>';
+    // Not Seen section
+    if (notSeenShows.length > 0) {
+        html += '<h3 class="subsection-title">Not seen</h3>';
+        html += '<div class="subsection-grid">';
+        html += notSeenShows.map(show => createShowCard(show, 'notSeen')).join('');
+        html += '</div>';
+    }
+    
+    // Not Interested section
+    if (notInterestedShows.length > 0) {
+        html += '<h3 class="subsection-title">Not interested</h3>';
+        html += '<div class="subsection-grid">';
+        html += notInterestedShows.map(show => createShowCard(show, 'notInterested')).join('');
+        html += '</div>';
+    }
+    
+    if (html === '') {
+        html = '<div class="empty-state"><h3>No shows marked</h3><p>When you mark shows as not seen or skip them in Top 5, they\'ll appear here.</p></div>';
+    }
+    
+    container.innerHTML = html;
     updateFilterChips();
 }
 
@@ -834,6 +904,12 @@ function setupEventListeners() {
                 break;
             case 'undoNotSeen':
                 await undoNotSeen(title);
+                break;
+            case 'skip':
+                await skipShow(title);
+                break;
+            case 'undoNotInterested':
+                await undoNotInterested(title);
                 break;
         }
     });

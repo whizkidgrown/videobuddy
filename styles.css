@@ -577,6 +577,60 @@ main {
     color: var(--accent);
 }
 
+/* Skip Button */
+.skip-btn {
+    padding: 6px 16px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.skip-btn:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--danger);
+}
+
+/* Not Interested Actions */
+.not-interested-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Subsections in Not Seen Tab */
+.subsection-title {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.subsection-title:first-child {
+    margin-top: 0;
+}
+
+.subsection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .subsection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Rating Control */
 .rating-control {
     display: flex;
