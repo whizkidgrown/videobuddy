@@ -3,12 +3,13 @@ let data = null;
 let userRatings = {};
 let userStatuses = {};
 let databaseEnabled = false;
+let seenYes = new Set(); // Track shows where user clicked "Yes" to "Seen it?"
 
-// Streaming service logo mapping (only for subscribed services)
+// Streaming service logo mapping (local logos for subscribed services)
 const streamingLogos = {
-    'Netflix': 'https://cdn.simpleicons.org/netflix/E50914',
-    'Prime Video': 'https://cdn.simpleicons.org/amazonprimevideo/00A8E1',
-    'Max': 'https://upload.wikimedia.org/wikipedia/commons/1/17/Max_logo.svg'
+    'Netflix': 'assets/logos/netflix.svg',
+    'Prime Video': 'assets/logos/prime.svg',
+    'Max': 'assets/logos/max.svg'
 };
 
 // Initialize
@@ -462,12 +463,14 @@ function createShowCard(show, cardType = 'default') {
     const imdbUrl = show.imdb_id ? `https://www.imdb.com/title/${show.imdb_id}/` : null;
     const pitch = getPitch(show.title);
     
-    // For Rate Today: show "Seen it?" first
+    // For Rate Today: show "Seen it?" first, unless user clicked Yes or already rated
     const isRateToday = cardType === 'rateToday';
-    const showSeenQuestion = isRateToday && !userRating;
+    const hasSeenYes = seenYes.has(show.title);
+    const showSeenQuestion = isRateToday && !userRating && !hasSeenYes;
+    const showRatingControl = (isRateToday && (userRating || hasSeenYes)) || cardType === 'showRating' || userRating;
     
     return `
-        <div class="show-card horizontal" data-title="${show.title}">
+        <div class="show-card horizontal" data-title="${show.title.replace(/"/g, '&quot;')}">
             <div class="card-poster">
                 <img src="${show.img}" 
                      alt="${show.title}" 
@@ -492,30 +495,31 @@ function createShowCard(show, cardType = 'default') {
                     <div class="seen-question">
                         <span class="seen-label">Seen it?</span>
                         <div class="seen-buttons">
-                            <button class="seen-btn yes" onclick="answerSeen('${show.title}', true)">Yes</button>
-                            <button class="seen-btn no" onclick="answerSeen('${show.title}', false)">No</button>
+                            <button class="seen-btn yes" data-action="seenYes">Yes</button>
+                            <button class="seen-btn no" data-action="seenNo">No</button>
                         </div>
                     </div>
                 ` : ''}
                 
-                ${(isRateToday && userRating) || cardType === 'showRating' || userRating ? `
+                ${showRatingControl ? `
+                    ${hasSeenYes && !userRating ? '<a href="#" class="back-link" data-action="seenBack">← Back</a>' : ''}
                     <div class="rating-control">
                         <button class="rating-btn ${userRating === 'loved' ? 'active loved' : ''}" 
-                                onclick="setRating('${show.title}', 'loved')">❤️</button>
+                                data-action="rate" data-rating="loved">❤️</button>
                         <button class="rating-btn ${userRating === 'okay' ? 'active okay' : ''}" 
-                                onclick="setRating('${show.title}', 'okay')">👍</button>
+                                data-action="rate" data-rating="okay">👍</button>
                         <button class="rating-btn ${userRating === 'disliked' ? 'active disliked' : ''}" 
-                                onclick="setRating('${show.title}', 'disliked')">👎</button>
+                                data-action="rate" data-rating="disliked">👎</button>
                     </div>
                 ` : ''}
                 
                 ${cardType === 'notSeen' ? `
                     <div class="not-seen-actions">
-                        <button class="undo-btn" onclick="undoNotSeen('${show.title}')">Remove from list</button>
+                        <button class="undo-btn" data-action="undoNotSeen">Remove from list</button>
                         <div class="rating-control">
-                            <button class="rating-btn" onclick="setRating('${show.title}', 'loved')">❤️</button>
-                            <button class="rating-btn" onclick="setRating('${show.title}', 'okay')">👍</button>
-                            <button class="rating-btn" onclick="setRating('${show.title}', 'disliked')">👎</button>
+                            <button class="rating-btn" data-action="rate" data-rating="loved">❤️</button>
+                            <button class="rating-btn" data-action="rate" data-rating="okay">👍</button>
+                            <button class="rating-btn" data-action="rate" data-rating="disliked">👎</button>
                         </div>
                     </div>
                 ` : ''}
@@ -523,9 +527,9 @@ function createShowCard(show, cardType = 'default') {
                 ${cardType === 'default' && !userRating ? `
                     <div class="status-control">
                         <button class="status-btn ${userStatus === 'Watching' ? 'active' : ''}" 
-                                onclick="setStatus('${show.title}', 'Watching')">▶️ Watching</button>
+                                data-action="status" data-status="Watching">▶️ Watching</button>
                         <button class="status-btn ${userStatus === 'Watched' ? 'active' : ''}" 
-                                onclick="setStatus('${show.title}', 'Watched')">✅ Watched</button>
+                                data-action="status" data-status="Watched">✅ Watched</button>
                     </div>
                 ` : ''}
             </div>
@@ -538,7 +542,8 @@ async function answerSeen(title, hasSeen) {
     const show = getShow(title);
     
     if (hasSeen) {
-        // Just re-render to show rating controls
+        // Add to seenYes Set and re-render to show rating controls
+        seenYes.add(title);
         renderTodaysBatch();
     } else {
         // Mark as not_seen and save
@@ -552,6 +557,12 @@ async function answerSeen(title, hasSeen) {
         renderTodaysBatch();
         renderNotSeen();
     }
+}
+
+// Go back from rating control to "Seen it?" question
+function goBackToSeenQuestion(title) {
+    seenYes.delete(title);
+    renderTodaysBatch();
 }
 
 // Undo not seen
@@ -790,6 +801,42 @@ function setupEventListeners() {
             renderLibrary();
         }, 300));
     }
+    
+    // Event delegation for all card actions
+    document.addEventListener('click', async (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        
+        const action = target.dataset.action;
+        const card = target.closest('.show-card');
+        if (!card) return;
+        
+        const title = card.dataset.title;
+        
+        switch (action) {
+            case 'seenYes':
+                await answerSeen(title, true);
+                break;
+            case 'seenNo':
+                await answerSeen(title, false);
+                break;
+            case 'seenBack':
+                e.preventDefault();
+                goBackToSeenQuestion(title);
+                break;
+            case 'rate':
+                const rating = target.dataset.rating;
+                await setRating(title, rating);
+                break;
+            case 'status':
+                const status = target.dataset.status;
+                setStatus(title, status);
+                break;
+            case 'undoNotSeen':
+                await undoNotSeen(title);
+                break;
+        }
+    });
 }
 
 // Debounce helper
@@ -805,13 +852,9 @@ function debounce(func, wait) {
     };
 }
 
-// Make functions global for onclick handlers
-window.setRating = setRating;
-window.setStatus = setStatus;
+// Make functions global for onclick handlers (filters only)
 window.clearAllFilters = clearAllFilters;
 window.toggleFilters = toggleFilters;
 window.toggleDropdown = toggleDropdown;
 window.clearDropdown = clearDropdown;
 window.removeFilterChip = removeFilterChip;
-window.answerSeen = answerSeen;
-window.undoNotSeen = undoNotSeen;
