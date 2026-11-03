@@ -1,29 +1,34 @@
 {
   "todaysBatch": [
-    "Deadwind",
-    "Rebus",
-    "Inspector Rishi",
-    "Duranga",
-    "Justified",
-    "Mr. Robot",
-    "Taboo"
+    "Bosch: Legacy",
+    "Your Honor",
+    "Special Ops: Lioness",
+    "Gullak",
+    "The Freelancer",
+    "Strike",
+    "Marcella",
+    "Bloodlands"
   ],
   "top5": [
     {
-      "title": "Dept. Q",
-      "pitch": "Matthew Goode runs an Edinburgh cold-case unit; Happy Valley/Line of Duty lane"
+      "title": "The Day of the Jackal",
+      "pitch": "Eddie Redmayne's assassin vs Lashana Lynch's MI6 hunter across Europe; Night Manager/Bodyguard energy"
     },
     {
       "title": "Black Doves",
-      "pitch": "Keira Knightley spy in London with Ben Whishaw as her hitman minder"
+      "pitch": "Keira Knightley spy in London with Ben Whishaw as her hitman minder; Season 2 lands Nov 5"
     },
     {
-      "title": "The Chestnut Man",
-      "pitch": "Nordic serial-killer hunt like The Killing/The Bridge"
+      "title": "Vigil",
+      "pitch": "Death aboard a Trident nuclear sub; Line of Duty/Bodyguard producers, and you loved The Capture"
     },
     {
-      "title": "Suzhal - The Vortex",
-      "pitch": "Missing-girl mystery in small-town Tamil Nadu, close to Kohrra"
+      "title": "The Investigation",
+      "pitch": "Danish true-crime procedural from Tobias Lindholm; quiet, Chernobyl-style realism like The Killing"
+    },
+    {
+      "title": "Khakee: The Bengal Chapter",
+      "pitch": "Neeraj Pandey's Kolkata cop-vs-don saga, the follow-up to Khakee: The Bihar Chapter you loved"
     }
   ],
   "shows": [
@@ -2102,7 +2107,7 @@
       "lang": "English",
       "imdb_id": "tt1178618",
       "imdb_rating": "7.8",
-      "rating": "",
+      "rating": "okay",
       "status": "",
       "streaming": "Peacock, BritBox"
     },
@@ -2118,7 +2123,7 @@
       "lang": "Finnish",
       "imdb_id": "tt6616260",
       "imdb_rating": "7.3",
-      "rating": "",
+      "rating": "not_seen",
       "status": "",
       "streaming": "Not streaming in US"
     },
@@ -2130,7 +2135,7 @@
       "lang": "Tamil",
       "imdb_id": "tt27688034",
       "imdb_rating": "N/A",
-      "rating": "",
+      "rating": "disliked",
       "status": "",
       "streaming": ""
     },
@@ -2146,7 +2151,7 @@
       "lang": "English",
       "imdb_id": "tt1489428",
       "imdb_rating": "8.6",
-      "rating": "",
+      "rating": "not_seen",
       "status": "",
       "streaming": "Hulu"
     },
@@ -2162,7 +2167,7 @@
       "lang": "English",
       "imdb_id": "tt4158110",
       "imdb_rating": "8.5",
-      "rating": "",
+      "rating": "okay",
       "status": "",
       "streaming": "Prime Video"
     },
@@ -2178,7 +2183,7 @@
       "lang": "English",
       "imdb_id": "tt3647998",
       "imdb_rating": "8.3",
-      "rating": "",
+      "rating": "not_seen",
       "status": "",
       "streaming": "Hulu, FX on Hulu"
     },
@@ -2190,7 +2195,7 @@
       "lang": "Hindi",
       "imdb_id": "tt21370880",
       "imdb_rating": "7.4",
-      "rating": "",
+      "rating": "disliked",
       "status": "",
       "streaming": "ZEE5"
     },
@@ -2205,7 +2210,7 @@
       "lang": "English",
       "imdb_id": "tt3428912",
       "imdb_rating": "8.5",
-      "rating": "",
+      "rating": "loved",
       "status": "",
       "streaming": "BritBox"
     },
@@ -2221,7 +2226,7 @@
       "lang": "English",
       "imdb_id": "tt8201186",
       "imdb_rating": "8.0",
-      "rating": "",
+      "rating": "loved",
       "status": "",
       "streaming": "Peacock"
     },
@@ -2266,7 +2271,7 @@
       "lang": "English",
       "imdb_id": "tt11116780",
       "imdb_rating": "7.0",
-      "rating": "",
+      "rating": "not_seen",
       "status": "",
       "streaming": "Rent on Amazon Video"
     },
@@ -2312,7 +2317,7 @@
       "lang": "English",
       "imdb_id": "tt27995114",
       "imdb_rating": "8.1",
-      "rating": "",
+      "rating": "okay",
       "status": "",
       "streaming": "Netflix"
     },
@@ -2344,7 +2349,7 @@
       "lang": "Danish",
       "imdb_id": "tt10834220",
       "imdb_rating": "7.6",
-      "rating": "",
+      "rating": "loved",
       "status": "",
       "streaming": "Netflix"
     },
@@ -2359,9 +2364,533 @@
       "lang": "Tamil",
       "imdb_id": "tt20873118",
       "imdb_rating": "8.1",
+      "rating": "not_interested",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
+      "title": "Devs",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/244/611263.jpg",
+      "year": "2020",
+      "genres": [
+        "Drama",
+        "Science-Fiction",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt8134186",
+      "imdb_rating": "7.6",
+      "rating": "okay",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Young Wallander",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/267/669874.jpg",
+      "year": "2020",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt9359220",
+      "imdb_rating": "6.9",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Sherwood",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/532/1330762.jpg",
+      "year": "2022",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt13994572",
+      "imdb_rating": "7.4",
+      "rating": "loved",
+      "status": "",
+      "streaming": "BBC One"
+    },
+    {
+      "title": "The Spy",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/209/523364.jpg",
+      "year": "2019",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt5952634",
+      "imdb_rating": "7.9",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Goliath",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/350/875839.jpg",
+      "year": "2016",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Legal"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4687880",
+      "imdb_rating": "8.1",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
+      "title": "The Missing",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/2/5109.jpg",
+      "year": "2014",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt3877200",
+      "imdb_rating": "8.1",
+      "rating": "okay",
+      "status": "",
+      "streaming": "BBC One"
+    },
+    {
+      "title": "Poacher",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/505/1264336.jpg",
+      "year": "2024",
+      "genres": [
+        "Crime"
+      ],
+      "lang": "Malayalam",
+      "imdb_id": "tt24364990",
+      "imdb_rating": "7.7",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
+      "title": "Trial by Fire",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/441/1103289.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt11611698",
+      "imdb_rating": "7.7",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "CAT",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/433/1084925.jpg",
+      "year": "2022",
+      "genres": [
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "",
+      "imdb_rating": "",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "The Bureau",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/247/619649.jpg",
+      "year": "2015",
+      "genres": [
+        "Drama",
+        "Espionage"
+      ],
+      "lang": "French",
+      "imdb_id": "tt4063800",
+      "imdb_rating": "8.6",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": ""
+    },
+    {
+      "title": "Counterpart",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/175/438213.jpg",
+      "year": "2017",
+      "genres": [
+        "Drama",
+        "Science-Fiction",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4643084",
+      "imdb_rating": "8.0",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "STARZ"
+    },
+    {
+      "title": "Criminal Record",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/622/1556570.jpg",
+      "year": "2024",
+      "genres": [
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt21088136",
+      "imdb_rating": "7.1",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "Apple TV"
+    },
+    {
+      "title": "Hidden Assets",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/597/1493349.jpg",
+      "year": "2021",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt15813014",
+      "imdb_rating": "7.2",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "RTÉ ONE"
+    },
+    {
+      "title": "Signal",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/139/349655.jpg",
+      "year": "2016",
+      "genres": [
+        "Crime",
+        "Thriller",
+        "Mystery"
+      ],
+      "lang": "Korean",
+      "imdb_id": "tt5332206",
+      "imdb_rating": "8.4",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "tvN"
+    },
+    {
+      "title": "Industry",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521293.jpg",
+      "year": "2020",
+      "genres": [
+        "Drama"
+      ],
+      "lang": "English",
+      "imdb_id": "tt7671070",
+      "imdb_rating": "7.5",
+      "rating": "not_seen",
+      "status": "",
+      "streaming": "HBO"
+    },
+    {
+      "title": "Under the Banner of Heaven",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/408/1020918.jpg",
+      "year": "2022",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt1998372",
+      "imdb_rating": "7.5",
+      "rating": "okay",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Jubilee",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/455/1139198.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Fantasy"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt19868804",
+      "imdb_rating": "8.3",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Prime Video"
+    },
+    {
+      "title": "Black Snow",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/438/1096696.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt21263178",
+      "imdb_rating": "7.3",
+      "rating": "okay",
+      "status": "",
+      "streaming": "Stan"
+    },
+    {
+      "title": "River",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/24/61458.jpg",
+      "year": "2015",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4258440",
+      "imdb_rating": "7.9",
+      "rating": "loved",
+      "status": "",
+      "streaming": "BBC One"
+    },
+    {
+      "title": "Giri/Haji",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/215/538753.jpg",
+      "year": "2019",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt8001106",
+      "imdb_rating": "7.8",
+      "rating": "loved",
+      "status": "",
+      "streaming": "BBC iPlayer"
+    },
+    {
+      "title": "Tokyo Vice",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/502/1256479.jpg",
+      "year": "2022",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt2887954",
+      "imdb_rating": "8.1",
+      "rating": "loved",
+      "status": "",
+      "streaming": "HBO Max"
+    },
+    {
+      "title": "Scoop",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/463/1157994.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt22297178",
+      "imdb_rating": "7.6",
+      "rating": "loved",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Bosch: Legacy",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/564/1411768.jpg",
+      "year": "2022",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "English",
+      "imdb_id": "tt14168162",
+      "imdb_rating": "",
       "rating": "",
       "status": "",
       "streaming": "Prime Video"
+    },
+    {
+      "title": "Your Honor",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/441/1103200.jpg",
+      "year": "2020",
+      "genres": [
+        "Thriller",
+        "Legal"
+      ],
+      "lang": "English",
+      "imdb_id": "tt7440726",
+      "imdb_rating": "7.6",
+      "rating": "",
+      "status": "",
+      "streaming": "Paramount+ with Showtime"
+    },
+    {
+      "title": "Special Ops: Lioness",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/635/1587727.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Espionage"
+      ],
+      "lang": "English",
+      "imdb_id": "tt13111078",
+      "imdb_rating": "7.8",
+      "rating": "",
+      "status": "",
+      "streaming": "Paramount+"
+    },
+    {
+      "title": "Gullak",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/522/1306547.jpg",
+      "year": "2019",
+      "genres": [
+        "Drama",
+        "Comedy",
+        "Family"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt10530900",
+      "imdb_rating": "9.1",
+      "rating": "",
+      "status": "",
+      "streaming": "Sony LIV"
+    },
+    {
+      "title": "The Freelancer",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/475/1188015.jpg",
+      "year": "2023",
+      "genres": [
+        "Drama",
+        "Action",
+        "Thriller"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt28489281",
+      "imdb_rating": "8.1",
+      "rating": "",
+      "status": "",
+      "streaming": "Hulu"
+    },
+    {
+      "title": "Strike",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/548/1370698.jpg",
+      "year": "2017",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt4276618",
+      "imdb_rating": "7.9",
+      "rating": "",
+      "status": "",
+      "streaming": "HBO Max"
+    },
+    {
+      "title": "Marcella",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/462/1155381.jpg",
+      "year": "2016",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt5269594",
+      "imdb_rating": "7.3",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
+    },
+    {
+      "title": "Bloodlands",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/422/1056635.jpg",
+      "year": "2021",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt11285548",
+      "imdb_rating": "6.7",
+      "rating": "",
+      "status": "",
+      "streaming": "Acorn TV / AMC+"
+    },
+    {
+      "title": "The Day of the Jackal",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/541/1352923.jpg",
+      "year": "2024",
+      "genres": [
+        "Thriller"
+      ],
+      "lang": "English",
+      "imdb_id": "tt24053860",
+      "imdb_rating": "8.1",
+      "rating": "",
+      "status": "",
+      "streaming": "Peacock"
+    },
+    {
+      "title": "Vigil",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/639/1597618.jpg",
+      "year": "2021",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Mystery"
+      ],
+      "lang": "English",
+      "imdb_id": "tt11846996",
+      "imdb_rating": "7.4",
+      "rating": "",
+      "status": "",
+      "streaming": "Peacock"
+    },
+    {
+      "title": "The Investigation",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/291/729992.jpg",
+      "year": "2020",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "lang": "Danish",
+      "imdb_id": "tt9112152",
+      "imdb_rating": "7.5",
+      "rating": "",
+      "status": "",
+      "streaming": "HBO Max"
+    },
+    {
+      "title": "Khakee: The Bengal Chapter",
+      "img": "https://static.tvmaze.com/uploads/images/medium_portrait/560/1400766.jpg",
+      "year": "2025",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "lang": "Hindi",
+      "imdb_id": "tt34569030",
+      "imdb_rating": "7.5",
+      "rating": "",
+      "status": "",
+      "streaming": "Netflix"
     }
   ]
 }
