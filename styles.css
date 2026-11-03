@@ -301,6 +301,7 @@ main {
     cursor: pointer;
     font-size: 1rem;
     font-weight: 600;
+    line-height: 1;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: inline-flex;
     align-items: center;
@@ -309,7 +310,11 @@ main {
     white-space: nowrap;
     width: 180px;
     height: 43px;
+    max-height: 43px;
+    min-height: 43px;
     box-sizing: border-box;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .btn-get-picks:hover {
