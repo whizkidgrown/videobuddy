@@ -776,18 +776,21 @@ function createAISuggestionCard(suggestion, cardType) {
         country: suggestion.country,
         genres: suggestion.genres || [],
         streaming: suggestion.streaming,
-        imdb_rating: suggestion.tvmaze_rating ? String(suggestion.tvmaze_rating) : '0',
+        imdb_rating: suggestion.tvmaze_rating ? String(suggestion.tvmaze_rating) : '',
         imdb_id: suggestion.imdb_id || '',
+        img: suggestion.poster_url || '', // Use img field for consistency
         poster: suggestion.poster_url || '',
+        poster_url: suggestion.poster_url || '',
         pitch: suggestion.pitch || '',
         _isAiSuggestion: true,
-        _isTVmazeRating: !!suggestion.tvmaze_rating, // Flag to show "TVmaze" instead of "IMDb"
+        _isTVmazeRating: !!suggestion.tvmaze_rating,
         _suggestionId: suggestion._suggestionId
     };
     
-    // If no poster or rating, try to fetch from TVmaze
-    if (!show.poster || !show.imdb_rating || show.imdb_rating === '0') {
+    // Trigger both TVmaze and OMDb enrichment for AI suggestions
+    if (!show.poster || !show.imdb_rating) {
         fetchPosterForSuggestion(suggestion);
+        // OMDb will be triggered by createShowCard via getOMDbData
     }
     
     return createShowCard(show, cardType);
@@ -904,7 +907,7 @@ function getOMDbData(show) {
     
     // Only fetch if show is missing poster OR rating
     const needsPoster = !show.poster && !show.img;
-    const needsRating = !show.imdb_rating || show.imdb_rating === 'N/A' || show.imdb_rating === '0';
+    const needsRating = !show.imdb_rating || show.imdb_rating === 'N/A' || show.imdb_rating === '0' || show.imdb_rating === '';
     
     if (needsPoster || needsRating) {
         // Start fetching if not already in progress
@@ -920,6 +923,8 @@ function getOMDbData(show) {
                         imdbID: omdbData.imdbID
                     };
                     omdbDataMap.set(showKey, gapFillingData);
+                    // Update card in place
+                    updateCardWithOMDbData(show.title, gapFillingData);
                 } else {
                     omdbDataMap.set(showKey, null);
                 }
@@ -935,6 +940,34 @@ function getOMDbData(show) {
     }
     
     return null; // Return null while loading
+}
+
+// Update a card in place when OMDb data arrives (avoids full re-render)
+function updateCardWithOMDbData(title, omdbData) {
+    const cards = document.querySelectorAll(`.show-card[data-title="${title.replace(/"/g, '&quot;')}"]`);
+    cards.forEach(card => {
+        // Update poster if provided
+        if (omdbData.poster) {
+            const img = card.querySelector('.card-poster img');
+            const fallback = card.querySelector('.poster-fallback');
+            if (img && img.style.display === 'none') {
+                img.src = omdbData.poster;
+                img.style.display = '';
+                if (fallback) fallback.style.display = 'none';
+            }
+        }
+        
+        // Update rating if provided
+        if (omdbData.imdbRating && omdbData.imdbID) {
+            const badgesContainer = card.querySelector('.ratings-badges');
+            if (badgesContainer && !badgesContainer.querySelector('.imdb-badge')) {
+                const badgeHTML = `<a href="https://www.imdb.com/title/${omdbData.imdbID}/" target="_blank" rel="noopener noreferrer" class="imdb-badge">
+                    <span class="badge-label">IMDb</span> ${omdbData.imdbRating}
+                </a>`;
+                badgesContainer.innerHTML = badgeHTML + badgesContainer.innerHTML;
+            }
+        }
+    });
 }
 
 // Fetch poster and rating from TVmaze API for AI suggestions
