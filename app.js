@@ -5,6 +5,13 @@ let userStatuses = {};
 let databaseEnabled = false;
 let seenYes = new Set(); // Track shows where user clicked "Yes" to "Seen it?"
 
+// OMDb API configuration
+const OMDB_API_KEY = 'c5c8e54';
+const OMDB_CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
+let omdbRequestQueue = [];
+let omdbLastRequestTime = 0;
+const OMDB_MIN_DELAY = 100; // 100ms between requests to stay under 1000/day
+
 // Streaming service logo mapping (local logos for subscribed services)
 const streamingLogos = {
     'Netflix': 'assets/logos/netflix.svg',
@@ -466,6 +473,19 @@ function getPitch(title) {
 
 // Create card HTML (horizontal layout)
 function createShowCard(show, cardType = 'default') {
+    // Trigger OMDb enrichment in background (will re-render when complete)
+    if (!show._omdbEnriched && !show._omdbEnriching) {
+        show._omdbEnriching = true;
+        enrichShowWithOMDb(show).then(() => {
+            show._omdbEnriching = false;
+            // Re-render the appropriate tab
+            const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+            if (activeTab === 'newRatings') renderNewRatings();
+            else if (activeTab === 'library') renderLibrary();
+            else if (activeTab === 'notSeen') renderNotSeen();
+        });
+    }
+    
     const userRating = userRatings[show.title] || show.rating || '';
     const userStatus = userStatuses[show.title] || show.status || '';
     const imdbUrl = show.imdb_id ? `https://www.imdb.com/title/${show.imdb_id}/` : null;
@@ -494,8 +514,16 @@ function createShowCard(show, cardType = 'default') {
                             `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer">${show.title}</a>` :
                             `<span>${show.title}</span>`}
                     </div>
-                    ${show.imdb_rating && show.imdb_rating !== 'N/A' && show.imdb_rating !== null ? 
-                        `<div class="imdb-badge-inline">⭐ ${show.imdb_rating}</div>` : ''}
+                    <div class="ratings-badges">
+                        ${show._omdbImdbRating || (show.imdb_rating && show.imdb_rating !== 'N/A' && show.imdb_rating !== '0') ? 
+                            `<a href="https://www.imdb.com/title/${show.imdb_id || ''}/" target="_blank" rel="noopener noreferrer" class="imdb-badge" ${!show.imdb_id ? 'onclick="return false;" style="pointer-events:none;"' : ''}>
+                                <span class="badge-label">IMDb</span> ${show._omdbImdbRating || show.imdb_rating}
+                            </a>` : 
+                            show._isTVmazeRating && show.imdb_rating && show.imdb_rating !== '0' ?
+                                `<span class="tvmaze-badge"><span class="badge-label">TVmaze</span> ${show.imdb_rating}</span>` : ''}
+                        ${show._omdbRtRating ? 
+                            `<span class="rt-badge"><span class="badge-label">🍅</span> ${show._omdbRtRating}</span>` : ''}
+                    </div>
                 </div>
                 <div class="card-meta">${show.year} • ${show.lang}${show.genres && show.genres.length > 0 ? ' • ' + show.genres.slice(0, 2).join(', ') : ''}</div>
                 ${show.streaming ? `<div class="card-streaming">${getStreamingBadges(show.streaming)}</div>` : ''}
@@ -743,14 +771,214 @@ function createAISuggestionCard(suggestion, cardType) {
         country: suggestion.country,
         genres: suggestion.genres || [],
         streaming: suggestion.streaming,
-        imdb_rating: '0', // AI suggestions don't have IMDb ratings yet
-        imdb_id: '',
+        imdb_rating: suggestion.tvmaze_rating ? String(suggestion.tvmaze_rating) : '0',
+        imdb_id: suggestion.imdb_id || '',
         poster: suggestion.poster_url || '',
         pitch: suggestion.pitch || '',
-        _isAiSuggestion: true
+        _isAiSuggestion: true,
+        _isTVmazeRating: !!suggestion.tvmaze_rating, // Flag to show "TVmaze" instead of "IMDb"
+        _suggestionId: suggestion._suggestionId
     };
     
+    // If no poster or rating, try to fetch from TVmaze
+    if (!show.poster || !show.imdb_rating || show.imdb_rating === '0') {
+        fetchPosterForSuggestion(suggestion);
+    }
+    
     return createShowCard(show, cardType);
+}
+
+// Fetch ratings and poster from OMDb API
+async function fetchOMDbData(show) {
+    const cacheKey = `omdb_${(show.imdb_id || show.title).toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+    
+    // Check cache first
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            const cacheData = JSON.parse(cached);
+            if (Date.now() - cacheData.timestamp < OMDB_CACHE_DURATION) {
+                return cacheData.data;
+            }
+        } catch (e) {
+            console.error('Cache parse error:', e);
+        }
+    }
+    
+    // Build OMDb API URL
+    let url = `https://www.omdbapi.com/?type=series&apikey=${OMDB_API_KEY}`;
+    if (show.imdb_id) {
+        url += `&i=${show.imdb_id}`;
+    } else {
+        url += `&t=${encodeURIComponent(show.title)}`;
+        if (show.year) {
+            url += `&y=${show.year}`;
+        }
+    }
+    
+    try {
+        // Throttle requests
+        const now = Date.now();
+        const timeSinceLastRequest = now - omdbLastRequestTime;
+        if (timeSinceLastRequest < OMDB_MIN_DELAY) {
+            await new Promise(resolve => setTimeout(resolve, OMDB_MIN_DELAY - timeSinceLastRequest));
+        }
+        omdbLastRequestTime = Date.now();
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`OMDb API error: ${response.status}`);
+        }
+        
+        const omdbData = await response.json();
+        
+        if (omdbData.Response === 'False') {
+            // Not found, cache negative result
+            localStorage.setItem(cacheKey, JSON.stringify({
+                data: null,
+                timestamp: Date.now()
+            }));
+            return null;
+        }
+        
+        // Extract ratings
+        const imdbRating = omdbData.imdbRating !== 'N/A' ? omdbData.imdbRating : null;
+        const rtRating = omdbData.Ratings?.find(r => r.Source === 'Rotten Tomatoes')?.Value || null;
+        const poster = omdbData.Poster !== 'N/A' ? omdbData.Poster : null;
+        const imdbID = omdbData.imdbID || null;
+        
+        const result = {
+            imdbRating,
+            rtRating,
+            poster,
+            imdbID
+        };
+        
+        // Cache the result
+        localStorage.setItem(cacheKey, JSON.stringify({
+            data: result,
+            timestamp: Date.now()
+        }));
+        
+        return result;
+    } catch (error) {
+        console.error('Error fetching from OMDb:', error);
+        return null;
+    }
+}
+
+// Enrich show with OMDb data lazily
+async function enrichShowWithOMDb(show) {
+    if (show._omdbEnriched) return show;
+    
+    const omdbData = await fetchOMDbData(show);
+    if (omdbData) {
+        show._omdbImdbRating = omdbData.imdbRating;
+        show._omdbRtRating = omdbData.rtRating;
+        if (!show.poster && omdbData.poster) {
+            show.poster = omdbData.poster;
+        }
+        if (!show.imdb_id && omdbData.imdbID) {
+            show.imdb_id = omdbData.imdbID;
+        }
+    }
+    show._omdbEnriched = true;
+    return show;
+}
+
+// Fetch poster and rating from TVmaze API for AI suggestions
+async function fetchPosterForSuggestion(suggestion) {
+    const cacheKey = `tvmaze_${suggestion.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+    
+    // Check localStorage cache first
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        const cacheData = JSON.parse(cached);
+        if (Date.now() - cacheData.timestamp < 7 * 24 * 60 * 60 * 1000) { // 7 day cache
+            updateSuggestionData(suggestion, cacheData);
+            return;
+        }
+    }
+    
+    try {
+        const response = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(suggestion.title)}`);
+        if (!response.ok) {
+            // No result from TVmaze
+            localStorage.setItem(cacheKey, JSON.stringify({ 
+                poster: null, 
+                rating: null, 
+                imdbId: null,
+                timestamp: Date.now() 
+            }));
+            return;
+        }
+        
+        const tvmazeData = await response.json();
+        const posterUrl = tvmazeData.image?.medium || tvmazeData.image?.original || null;
+        const rating = tvmazeData.rating?.average || null;
+        const imdbId = tvmazeData.externals?.imdb || null;
+        
+        const tvmazeInfo = {
+            poster: posterUrl,
+            rating: rating,
+            imdbId: imdbId,
+            timestamp: Date.now()
+        };
+        
+        // Cache the result
+        localStorage.setItem(cacheKey, JSON.stringify(tvmazeInfo));
+        
+        if (posterUrl || rating || imdbId) {
+            updateSuggestionData(suggestion, tvmazeInfo);
+            
+            // Try to update database (will fail silently if RLS doesn't allow)
+            if (sbClient && suggestion._suggestionId) {
+                try {
+                    await sbClient
+                        .from('suggestions')
+                        .update({
+                            meta: {
+                                ...suggestion,
+                                poster_url: posterUrl,
+                                tvmaze_rating: rating,
+                                imdb_id: imdbId
+                            }
+                        })
+                        .eq('id', suggestion._suggestionId);
+                } catch (dbError) {
+                    // RLS doesn't allow, that's fine - we have it cached
+                    console.log('Could not update TVmaze data in database (RLS)');
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching data from TVmaze:', error);
+    }
+}
+
+// Update suggestion data (poster, rating, IMDb ID) in memory and re-render
+function updateSuggestionData(suggestion, tvmazeInfo) {
+    if (!tvmazeInfo.poster && !tvmazeInfo.rating && !tvmazeInfo.imdbId) return;
+    
+    // Update in-memory data
+    if (data.suggestions) {
+        const topIndex = data.suggestions.top.findIndex(s => s.title === suggestion.title);
+        if (topIndex !== -1) {
+            if (tvmazeInfo.poster) data.suggestions.top[topIndex].poster_url = tvmazeInfo.poster;
+            if (tvmazeInfo.rating) data.suggestions.top[topIndex].tvmaze_rating = tvmazeInfo.rating;
+            if (tvmazeInfo.imdbId) data.suggestions.top[topIndex].imdb_id = tvmazeInfo.imdbId;
+        }
+        
+        const batchIndex = data.suggestions.batch.findIndex(s => s.title === suggestion.title);
+        if (batchIndex !== -1) {
+            if (tvmazeInfo.poster) data.suggestions.batch[batchIndex].poster_url = tvmazeInfo.poster;
+            if (tvmazeInfo.rating) data.suggestions.batch[batchIndex].tvmaze_rating = tvmazeInfo.rating;
+            if (tvmazeInfo.imdbId) data.suggestions.batch[batchIndex].imdb_id = tvmazeInfo.imdbId;
+        }
+    }
+    
+    // Re-render to show the updated data
+    renderNewRatings();
 }
 
 // Render Library (Watched - excluding not_seen and not_interested)
