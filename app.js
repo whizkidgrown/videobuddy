@@ -26,19 +26,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadData();
         
-        // Try to initialize database
+        // Always load localStorage first to restore AI suggestions
+        loadUserData();
+        
+        // Try to initialize database (will merge with localStorage)
         try {
             databaseEnabled = initSupabase();
             if (databaseEnabled) {
                 await loadRatingsFromDatabase();
             } else {
                 console.warn('Database not initialized, using localStorage only');
-                loadUserData();
             }
         } catch (dbError) {
             console.error('Database initialization failed:', dbError);
             databaseEnabled = false;
-            loadUserData();
         }
         
         // Always set up UI regardless of database status
