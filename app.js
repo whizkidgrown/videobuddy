@@ -11,6 +11,7 @@ const OMDB_CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
 let omdbRequestQueue = [];
 let omdbLastRequestTime = 0;
 const OMDB_MIN_DELAY = 100; // 100ms between requests to stay under 1000/day
+const omdbEnrichedShows = new Set(); // Track which shows have been enriched
 
 // Streaming service logo mapping (local logos for subscribed services)
 const streamingLogos = {
@@ -473,16 +474,22 @@ function getPitch(title) {
 
 // Create card HTML (horizontal layout)
 function createShowCard(show, cardType = 'default') {
-    // Trigger OMDb enrichment in background (will re-render when complete)
-    if (!show._omdbEnriched && !show._omdbEnriching) {
-        show._omdbEnriching = true;
+    // Trigger OMDb enrichment in background (debounced re-render)
+    const showKey = show.imdb_id || show.title;
+    if (!omdbEnrichedShows.has(showKey)) {
+        omdbEnrichedShows.add(showKey);
         enrichShowWithOMDb(show).then(() => {
-            show._omdbEnriching = false;
-            // Re-render the appropriate tab
-            const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
-            if (activeTab === 'newRatings') renderNewRatings();
-            else if (activeTab === 'library') renderLibrary();
-            else if (activeTab === 'notSeen') renderNotSeen();
+            // Debounced re-render to avoid infinite loop
+            if (!window._omdbReRenderScheduled) {
+                window._omdbReRenderScheduled = true;
+                setTimeout(() => {
+                    window._omdbReRenderScheduled = false;
+                    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+                    if (activeTab === 'newRatings') renderNewRatings();
+                    else if (activeTab === 'library') renderLibrary();
+                    else if (activeTab === 'notSeen') renderNotSeen();
+                }, 1000); // Batch re-renders
+            }
         });
     }
     
@@ -869,8 +876,6 @@ async function fetchOMDbData(show) {
 
 // Enrich show with OMDb data lazily
 async function enrichShowWithOMDb(show) {
-    if (show._omdbEnriched) return show;
-    
     const omdbData = await fetchOMDbData(show);
     if (omdbData) {
         show._omdbImdbRating = omdbData.imdbRating;
@@ -882,7 +887,6 @@ async function enrichShowWithOMDb(show) {
             show.imdb_id = omdbData.imdbID;
         }
     }
-    show._omdbEnriched = true;
     return show;
 }
 
