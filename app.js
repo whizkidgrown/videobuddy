@@ -87,6 +87,16 @@ function loadUserData() {
             const parsed = JSON.parse(saved);
             userRatings = parsed.ratings || {};
             userStatuses = parsed.statuses || {};
+            
+            // Restore rated AI suggestions back into data.shows
+            if (parsed.ratedAISuggestions && Array.isArray(parsed.ratedAISuggestions)) {
+                parsed.ratedAISuggestions.forEach(aiShow => {
+                    // Only add if not already in data.shows
+                    if (!data.shows.find(s => s.title === aiShow.title)) {
+                        data.shows.push(aiShow);
+                    }
+                });
+            }
         } catch (e) {
             console.error('Error parsing saved data:', e);
         }
@@ -95,9 +105,13 @@ function loadUserData() {
 
 // Save user data to localStorage
 function saveUserData() {
+    // Also save rated AI suggestions so they persist across refreshes
+    const ratedAISuggestions = data.shows.filter(s => s._wasAiSuggestion);
+    
     localStorage.setItem('hemantTVRatings', JSON.stringify({
         ratings: userRatings,
         statuses: userStatuses,
+        ratedAISuggestions: ratedAISuggestions,
         lastUpdated: new Date().toISOString()
     }));
 }
