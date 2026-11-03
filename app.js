@@ -622,6 +622,24 @@ async function answerSeen(title, hasSeen) {
             }
         }
         
+        // If this is an AI suggestion, add it to data.shows so it appears in Not Seen
+        if (show && show._isAiSuggestion && !data.shows.find(s => s.title === title)) {
+            const newShow = {
+                title: show.title,
+                year: show.year,
+                country: show.country,
+                genres: show.genres || [],
+                streaming: show.streaming,
+                imdb_rating: show.imdb_rating || show.tvmaze_rating || '0',
+                imdb_id: show.imdb_id || '',
+                img: show.img || show.poster || show.poster_url || '',
+                poster: show.poster || show.img || show.poster_url || '',
+                pitch: show.pitch || '',
+                _wasAiSuggestion: true
+            };
+            data.shows.push(newShow);
+        }
+        
         saveUserData();
         renderNewRatings();
         renderNotSeen();
@@ -654,6 +672,24 @@ async function skipShow(title) {
         if (!saved) {
             showErrorToast('Failed to save to database. Please try again.');
         }
+    }
+    
+    // If this is an AI suggestion, add it to data.shows (though it won't be shown anywhere)
+    if (show && show._isAiSuggestion && !data.shows.find(s => s.title === title)) {
+        const newShow = {
+            title: show.title,
+            year: show.year,
+            country: show.country,
+            genres: show.genres || [],
+            streaming: show.streaming,
+            imdb_rating: show.imdb_rating || show.tvmaze_rating || '0',
+            imdb_id: show.imdb_id || '',
+            img: show.img || show.poster || show.poster_url || '',
+            poster: show.poster || show.img || show.poster_url || '',
+            pitch: show.pitch || '',
+            _wasAiSuggestion: true
+        };
+        data.shows.push(newShow);
     }
     
     saveUserData();
@@ -1242,6 +1278,24 @@ async function setRating(title, rating) {
             if (!saved) {
                 showErrorToast('Failed to save rating to database. Please try again.');
             }
+        }
+        
+        // If this is an AI suggestion being rated, add it to data.shows so it appears in Watched
+        if (show && show._isAiSuggestion && !data.shows.find(s => s.title === title)) {
+            const newShow = {
+                title: show.title,
+                year: show.year,
+                country: show.country,
+                genres: show.genres || [],
+                streaming: show.streaming,
+                imdb_rating: show.imdb_rating || show.tvmaze_rating || '0',
+                imdb_id: show.imdb_id || '',
+                img: show.img || show.poster || show.poster_url || '',
+                poster: show.poster || show.img || show.poster_url || '',
+                pitch: show.pitch || '',
+                _wasAiSuggestion: true
+            };
+            data.shows.push(newShow);
         }
         
         // Auto-set status to Watched when rated (for actual ratings, not not_seen)
