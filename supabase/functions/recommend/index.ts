@@ -114,7 +114,8 @@ Return ONLY valid JSON with this exact structure:
                   temperature: 0.7,
                   topK: 40,
                   topP: 0.95,
-                  maxOutputTokens: 2048,
+                  maxOutputTokens: 16384,
+                  responseMimeType: 'application/json'
                 }
               })
             }
@@ -160,14 +161,19 @@ Return ONLY valid JSON with this exact structure:
       throw new Error(lastError || 'All Gemini models failed')
     }
 
-    // Parse JSON from response (might be wrapped in ```json blocks)
+    // Parse JSON from response (strip ```json fences if present)
     let recommendations
     try {
-      const jsonMatch = responseText.match(/```json\n?(.*?)\n?```/s) || responseText.match(/\{.*\}/s)
-      const jsonText = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : responseText
+      let jsonText = responseText.trim()
+      
+      // Strip markdown code fences (```json ... ``` or ``` ... ```)
+      if (jsonText.startsWith('```')) {
+        jsonText = jsonText.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/, '')
+      }
+      
       recommendations = JSON.parse(jsonText.trim())
     } catch (parseError) {
-      console.error('Failed to parse Gemini response:', responseText)
+      console.error('Failed to parse Gemini response:', responseText.substring(0, 500))
       throw new Error('Failed to parse recommendations from Gemini')
     }
 
