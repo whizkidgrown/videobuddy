@@ -1028,13 +1028,13 @@ async function getNewRecommendations() {
         const originalText = btn.textContent;
         btn.textContent = 'Getting recommendations...';
         
-        // Check if database is enabled
-        if (!databaseEnabled || !window.sbClient) {
+        // Check if database client is available
+        if (!sbClient) {
             throw new Error('Database not configured. Please set up Supabase credentials.');
         }
         
         // Call Supabase Edge Function
-        const { data: functionData, error: functionError } = await window.sbClient.functions.invoke('recommend');
+        const { data: functionData, error: functionError } = await sbClient.functions.invoke('recommend');
         
         if (functionError) {
             if (functionError.message?.includes('not found') || functionError.message?.includes('404')) {
@@ -1083,7 +1083,7 @@ async function getNewRecommendations() {
 
 // Load suggestions from database (fail silently if table doesn't exist)
 async function loadSuggestionsFromDatabase() {
-    if (!databaseEnabled || !window.sbClient) {
+    if (!sbClient) {
         // Initialize empty suggestions
         if (data && !data.suggestions) {
             data.suggestions = { top: [], batch: [] };
@@ -1092,7 +1092,7 @@ async function loadSuggestionsFromDatabase() {
     }
     
     try {
-        const { data: suggestionsData, error } = await window.sbClient
+        const { data: suggestionsData, error } = await sbClient
             .from('suggestions')
             .select('*')
             .order('created_at', { ascending: false });
