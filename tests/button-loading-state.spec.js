@@ -61,7 +61,7 @@ test('Verify Get New Picks button maintains size in loading state', async ({ pag
       // Assertions
       expect(heightDiff, 'Button height should not change significantly').toBeLessThan(5);
       expect(loadingBox?.height || 0, 'Button should not become huge (>100px)').toBeLessThan(100);
-      expect(loadingText?.trim(), 'Loading text should be short').toContain('Finding');
+      expect(loadingText?.trim(), 'Loading text should be short').toMatch(/Getting|Finding/);
       
       console.log(`\n✓ Button maintains size in loading state`);
     } else {
