@@ -1,0 +1,46 @@
+name: Daily AI Picks
+
+on:
+  schedule:
+    # Run at 14:00 UTC (8-9 AM US Central/Mountain time)
+    - cron: '0 14 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  generate-picks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate AI recommendations
+        run: |
+          echo "Calling Supabase Edge Function to generate daily picks..."
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcmZ0bGFuemRmdXp3cmZld3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTAwMTUsImV4cCI6MjEwOTIyNjAxNX0.PrsAQsjGC_O10YeFcAbSz80pJwdzwoFfqGDK6YljuX0" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcmZ0bGFuemRmdXp3cmZld3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTAwMTUsImV4cCI6MjEwOTIyNjAxNX0.PrsAQsjGC_O10YeFcAbSz80pJwdzwoFfqGDK6YljuX0" \
+            -H "Content-Type: application/json" \
+            "https://xarftlanzdfuzwrfewqw.supabase.co/functions/v1/recommend")
+          
+          # Extract HTTP status code (last line)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response body:"
+          echo "$BODY" | jq '.' || echo "$BODY"
+          
+          # Check if status is 2xx
+          if [[ "$HTTP_CODE" -ge 200 ]] && [[ "$HTTP_CODE" -lt 300 ]]; then
+            echo "✓ Successfully generated daily picks"
+            
+            # Parse and display summary if available
+            TOP_PICKS=$(echo "$BODY" | jq -r '.topPicks // 0' 2>/dev/null || echo "0")
+            BATCH=$(echo "$BODY" | jq -r '.batch // 0' 2>/dev/null || echo "0")
+            echo "Generated $TOP_PICKS top picks + $BATCH batch recommendations"
+            
+            exit 0
+          else
+            echo "✗ Failed to generate picks - HTTP $HTTP_CODE"
+            exit 1
+          fi
