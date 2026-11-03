@@ -960,7 +960,7 @@ async function fetchPosterForSuggestion(suggestion) {
 function updateSuggestionData(suggestion, tvmazeInfo) {
     if (!tvmazeInfo.poster && !tvmazeInfo.rating && !tvmazeInfo.imdbId) return;
     
-    // Update in-memory data
+    // Update in-memory data (no re-render to avoid infinite loop)
     if (data.suggestions) {
         const topIndex = data.suggestions.top.findIndex(s => s.title === suggestion.title);
         if (topIndex !== -1) {
@@ -976,9 +976,6 @@ function updateSuggestionData(suggestion, tvmazeInfo) {
             if (tvmazeInfo.imdbId) data.suggestions.batch[batchIndex].imdb_id = tvmazeInfo.imdbId;
         }
     }
-    
-    // Re-render to show the updated data
-    renderNewRatings();
 }
 
 // Render Library (Watched - excluding not_seen and not_interested)
