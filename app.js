@@ -104,7 +104,20 @@ function saveUserData() {
 
 // Get show by title
 function getShow(title) {
-    return data.shows.find(s => s.title === title);
+    // Check regular shows first
+    let show = data.shows.find(s => s.title === title);
+    if (show) return show;
+    
+    // Check AI suggestions (top and batch)
+    if (data.suggestions) {
+        show = data.suggestions.top?.find(s => s.title === title);
+        if (show) return show;
+        
+        show = data.suggestions.batch?.find(s => s.title === title);
+        if (show) return show;
+    }
+    
+    return null;
 }
 
 // Check if rating is a real rating (not metadata like not_seen/not_interested)
@@ -603,7 +616,10 @@ async function answerSeen(title, hasSeen) {
         userRatings[title] = 'not_seen';
         
         if (databaseEnabled && show) {
-            await saveRatingToDatabase(title, 'not_seen', show.imdb_id);
+            const saved = await saveRatingToDatabase(title, 'not_seen', show.imdb_id);
+            if (!saved) {
+                showErrorToast('Failed to save rating to database. Please try again.');
+            }
         }
         
         saveUserData();
@@ -634,7 +650,10 @@ async function skipShow(title) {
     userRatings[title] = 'not_interested';
     
     if (databaseEnabled && show) {
-        await saveRatingToDatabase(title, 'not_interested', show.imdb_id);
+        const saved = await saveRatingToDatabase(title, 'not_interested', show.imdb_id);
+        if (!saved) {
+            showErrorToast('Failed to save to database. Please try again.');
+        }
     }
     
     saveUserData();
@@ -879,6 +898,27 @@ async function fetchOMDbData(show) {
     }));
     
     return null;
+}
+
+// Show error toast
+function showErrorToast(message) {
+    // Remove existing toast if present
+    const existing = document.querySelector('.error-toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'error-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Fade in
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
 }
 
 // Handle poster error with fallback chain
@@ -1198,7 +1238,10 @@ async function setRating(title, rating) {
         userRatings[title] = rating;
         
         if (databaseEnabled && show) {
-            await saveRatingToDatabase(title, rating, show.imdb_id);
+            const saved = await saveRatingToDatabase(title, rating, show.imdb_id);
+            if (!saved) {
+                showErrorToast('Failed to save rating to database. Please try again.');
+            }
         }
         
         // Auto-set status to Watched when rated (for actual ratings, not not_seen)
