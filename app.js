@@ -8,10 +8,10 @@ let seenYes = new Set(); // Track shows where user clicked "Yes" to "Seen it?"
 // OMDb API configuration
 const OMDB_API_KEY = 'c5c8e54';
 const OMDB_CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
-let omdbRequestQueue = [];
 let omdbLastRequestTime = 0;
 const OMDB_MIN_DELAY = 100; // 100ms between requests to stay under 1000/day
-const omdbEnrichedShows = new Set(); // Track which shows have been enriched
+const omdbDataMap = new Map(); // Store OMDb data globally by show key
+const omdbPendingRequests = new Set(); // Track pending requests
 
 // Streaming service logo mapping (local logos for subscribed services)
 const streamingLogos = {
@@ -474,29 +474,16 @@ function getPitch(title) {
 
 // Create card HTML (horizontal layout)
 function createShowCard(show, cardType = 'default') {
-    // Trigger OMDb enrichment in background (debounced re-render)
-    const showKey = show.imdb_id || show.title;
-    if (!omdbEnrichedShows.has(showKey)) {
-        omdbEnrichedShows.add(showKey);
-        enrichShowWithOMDb(show).then(() => {
-            // Debounced re-render to avoid infinite loop
-            if (!window._omdbReRenderScheduled) {
-                window._omdbReRenderScheduled = true;
-                setTimeout(() => {
-                    window._omdbReRenderScheduled = false;
-                    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
-                    if (activeTab === 'newRatings') renderNewRatings();
-                    else if (activeTab === 'library') renderLibrary();
-                    else if (activeTab === 'notSeen') renderNotSeen();
-                }, 1000); // Batch re-renders
-            }
-        });
-    }
+    // Get OMDb data (triggers fetch if not cached)
+    const omdbData = getOMDbData(show);
     
     const userRating = userRatings[show.title] || show.rating || '';
     const userStatus = userStatuses[show.title] || show.status || '';
-    const imdbUrl = show.imdb_id ? `https://www.imdb.com/title/${show.imdb_id}/` : null;
+    const imdbUrl = (omdbData?.imdbID || show.imdb_id) ? `https://www.imdb.com/title/${omdbData?.imdbID || show.imdb_id}/` : null;
     const pitch = getPitch(show.title);
+    
+    // Use OMDb poster as fallback
+    const posterUrl = show.poster || show.img || omdbData?.poster || '';
     
     // For Rate Today: show "Seen it?" first, unless user clicked Yes or already rated
     const isRateToday = cardType === 'rateToday';
@@ -509,7 +496,7 @@ function createShowCard(show, cardType = 'default') {
     return `
         <div class="show-card horizontal" data-title="${show.title.replace(/"/g, '&quot;')}">
             <div class="card-poster">
-                <img src="${show.img}" 
+                <img src="${posterUrl}" 
                      alt="${show.title}" 
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="poster-fallback" style="display: none;">📺</div>
@@ -522,14 +509,14 @@ function createShowCard(show, cardType = 'default') {
                             `<span>${show.title}</span>`}
                     </div>
                     <div class="ratings-badges">
-                        ${show._omdbImdbRating || (show.imdb_rating && show.imdb_rating !== 'N/A' && show.imdb_rating !== '0') ? 
-                            `<a href="https://www.imdb.com/title/${show.imdb_id || ''}/" target="_blank" rel="noopener noreferrer" class="imdb-badge" ${!show.imdb_id ? 'onclick="return false;" style="pointer-events:none;"' : ''}>
-                                <span class="badge-label">IMDb</span> ${show._omdbImdbRating || show.imdb_rating}
+                        ${omdbData?.imdbRating || (show.imdb_rating && show.imdb_rating !== 'N/A' && show.imdb_rating !== '0') ? 
+                            `<a href="${imdbUrl || '#'}" target="_blank" rel="noopener noreferrer" class="imdb-badge" ${!imdbUrl ? 'onclick="return false;" style="pointer-events:none;"' : ''}>
+                                <span class="badge-label">IMDb</span> ${omdbData?.imdbRating || show.imdb_rating}
                             </a>` : 
                             show._isTVmazeRating && show.imdb_rating && show.imdb_rating !== '0' ?
                                 `<span class="tvmaze-badge"><span class="badge-label">TVmaze</span> ${show.imdb_rating}</span>` : ''}
-                        ${show._omdbRtRating ? 
-                            `<span class="rt-badge"><span class="badge-label">🍅</span> ${show._omdbRtRating}</span>` : ''}
+                        ${omdbData?.rtRating ? 
+                            `<span class="rt-badge"><span class="badge-label">🍅</span> ${omdbData.rtRating}</span>` : ''}
                     </div>
                 </div>
                 <div class="card-meta">${show.year} • ${show.lang}${show.genres && show.genres.length > 0 ? ' • ' + show.genres.slice(0, 2).join(', ') : ''}</div>
@@ -874,20 +861,29 @@ async function fetchOMDbData(show) {
     }
 }
 
-// Enrich show with OMDb data lazily
-async function enrichShowWithOMDb(show) {
-    const omdbData = await fetchOMDbData(show);
-    if (omdbData) {
-        show._omdbImdbRating = omdbData.imdbRating;
-        show._omdbRtRating = omdbData.rtRating;
-        if (!show.poster && omdbData.poster) {
-            show.poster = omdbData.poster;
-        }
-        if (!show.imdb_id && omdbData.imdbID) {
-            show.imdb_id = omdbData.imdbID;
-        }
+// Get OMDb data for show (fetch if not cached)
+function getOMDbData(show) {
+    const showKey = show.imdb_id || show.title;
+    
+    // Return cached data if available
+    if (omdbDataMap.has(showKey)) {
+        return omdbDataMap.get(showKey);
     }
-    return show;
+    
+    // Start fetching if not already in progress
+    if (!omdbPendingRequests.has(showKey)) {
+        omdbPendingRequests.add(showKey);
+        fetchOMDbData(show).then(omdbData => {
+            omdbPendingRequests.delete(showKey);
+            omdbDataMap.set(showKey, omdbData || null);
+        }).catch(error => {
+            console.error('Error fetching OMDb data:', error);
+            omdbPendingRequests.delete(showKey);
+            omdbDataMap.set(showKey, null);
+        });
+    }
+    
+    return null; // Return null while loading
 }
 
 // Fetch poster and rating from TVmaze API for AI suggestions
