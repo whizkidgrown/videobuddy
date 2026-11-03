@@ -304,9 +304,10 @@ main {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     white-space: nowrap;
-    min-height: 43px;
+    width: 180px;
     height: 43px;
     box-sizing: border-box;
 }
