@@ -1447,7 +1447,7 @@ async function getNewRecommendations() {
         btn.disabled = true;
         btn.classList.add('loading');
         const originalText = btn.textContent;
-        btn.textContent = 'Getting recommendations...';
+        btn.textContent = 'Finding picks…';
         
         // Check if database client is available
         if (!sbClient) {
